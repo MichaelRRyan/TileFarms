@@ -10,7 +10,7 @@ namespace Globals
 
 	float const TILE_SIZE{ 16.0f };
 
-	float const VIEW_SCALE{ 3.0f };
+	float const VIEW_SCALE{ 4.0f };
 
 	unsigned const WINDOW_WIDTH{ static_cast<unsigned>(VIEW_SCALE * TILE_SIZE * WORLD_WIDTH_X) };
 	unsigned const WINDOW_HEIGHT{ static_cast<unsigned>(VIEW_SCALE * TILE_SIZE * WORLD_WIDTH_Y) };

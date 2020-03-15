@@ -34,52 +34,49 @@ unsigned const Player::getRow() const
 
 void Player::handleMovement()
 {
-	sf::Vector2f movementVector;
+	sf::Vector2f inputVector;
 	m_velocity = { 0.0f, 0.0f };
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		movementVector.x--;
+		inputVector.x--;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		movementVector.x++;
+		inputVector.x++;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 	{
-		movementVector.y--;
+		inputVector.y--;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{
-		movementVector.y++;
+		inputVector.y++;
 	}
 
-	float const magnitude = sqrtf(movementVector.x * movementVector.x + movementVector.y * movementVector.y);
-
-	if (0 != magnitude)
+	if (vmath::length(inputVector) != 0.0f)
 	{
-		sf::Vector2f const moveDirection = movementVector / magnitude;
-		sf::Vector2f const movement = moveDirection * m_moveSpeed;
+		sf::Vector2f const movementVector = vmath::unitVector(inputVector) * m_moveSpeed;
 
 		// Horisontal collisions
-		int targetTileX = (m_sprite.getPosition().x + movement.x) / Globals::TILE_SIZE;
+		float targetTileX = (m_sprite.getPosition().x + movementVector.x + (Globals::TILE_SIZE / 3.0f * vmath::sign(movementVector.x))) / Globals::TILE_SIZE;
 		
-		if (targetTileX >= 0 && targetTileX < Globals::WORLD_WIDTH_X)
+		if (targetTileX >= 0.0f && targetTileX < Globals::WORLD_WIDTH_X)
 		{
-			if (m_world.getTileType(targetTileX, m_sprite.getPosition().y / Globals::TILE_SIZE, m_height) != TileType::Rock)
+			if (m_world.getTileType(static_cast<unsigned>(targetTileX), m_sprite.getPosition().y / Globals::TILE_SIZE, m_height) != TileType::Rock)
 			{
-				m_velocity.x = movement.x;
+				m_velocity.x = movementVector.x;
 			}
 		}
 
 		// Vertical collisions
-		int targetTileY = (m_sprite.getPosition().y + movement.y) / Globals::TILE_SIZE;
+		float targetTileY = (m_sprite.getPosition().y + movementVector.y + (Globals::TILE_SIZE / 4.0f * vmath::sign(movementVector.y))) / Globals::TILE_SIZE;
 
-		if (targetTileY >= 0 && targetTileY < Globals::WORLD_WIDTH_Y)
+		if (targetTileY >= 0.0f && targetTileY < Globals::WORLD_WIDTH_Y)
 		{
-			if (m_world.getTileType(m_sprite.getPosition().x / Globals::TILE_SIZE, targetTileY, m_height) != TileType::Rock)
+			if (m_world.getTileType(m_sprite.getPosition().x / Globals::TILE_SIZE, static_cast<unsigned>(targetTileY), m_height) != TileType::Rock)
 			{
-				m_velocity.y = movement.y;
+				m_velocity.y = movementVector.y;
 			}
 		}
 
@@ -139,5 +136,5 @@ void Player::loadTextures()
 
 	m_sprite.setTextureRect({ 16, m_characterNumber * 32, 16, 32 });
 	m_sprite.setOrigin(Globals::TILE_SIZE / 2.0f, Globals::TILE_SIZE * 2.0);
-	m_sprite.setPosition(Globals::TILE_SIZE / 2.0f, Globals::TILE_SIZE * 2.0f);
+	m_sprite.setPosition(Globals::TILE_SIZE * 8.5f, Globals::TILE_SIZE * 8.5f);
 }

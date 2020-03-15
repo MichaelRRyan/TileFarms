@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "World.h"
+#include "VectorMath.h"
 
 class Player
 {

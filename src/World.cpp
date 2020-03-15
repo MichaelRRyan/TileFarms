@@ -105,4 +105,6 @@ void World::initialise()
 			}
 		}
 	}
+
+	m_tiles[1][8][8] = TileType::Null;
 }
