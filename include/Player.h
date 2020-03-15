@@ -21,6 +21,8 @@ private:
 
 	void handleMovement();
 
+	void animate();
+
 	void loadTextures();
 
 	sf::Texture m_spriteSheet;
@@ -31,6 +33,13 @@ private:
 	float m_moveSpeed;
 
 	unsigned m_height; // Height in tiles
+
+	sf::Vector2f m_velocity;
+
+	sf::Clock m_animationClock;
+	float m_animationSpeed;
+
+	int m_characterNumber; // Character number in sprite sheet
 };
 
 #endif // !PLAYER_H
