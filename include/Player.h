@@ -14,6 +14,9 @@ public:
 
 	void draw(sf::RenderWindow & t_window) const;
 
+	unsigned const getHeight() const;
+	unsigned const getRow() const;
+
 private:
 
 	void handleMovement();

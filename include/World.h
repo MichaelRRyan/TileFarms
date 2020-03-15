@@ -15,6 +15,8 @@ public:
 
 	void draw(sf::RenderWindow & t_window);
 
+	void drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z);
+
 	TileType const getTileType(unsigned t_x, unsigned t_y, unsigned t_z) const;
 
 private:

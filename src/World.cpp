@@ -36,6 +36,30 @@ void World::draw(sf::RenderWindow& t_window)
 	}
 }
 
+void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
+{
+	for (unsigned x = 0; x < Globals::WORLD_WIDTH_X; x++)
+	{
+		if (TileType::Null != m_tiles[t_z][t_y][x])
+		{
+			if (TileType::Grass == m_tiles[t_z][t_y][x])
+			{
+				m_tileSprite.setTextureRect({ 0, 64, 16, 16 });
+			}
+			else if (TileType::Rock == m_tiles[t_z][t_y][x])
+			{
+				m_tileSprite.setTextureRect({ 0, 80, 16, 32 });
+			}
+
+			// Set the tile sprite's pixel position
+			m_tileSprite.setPosition(x * Globals::TILE_SIZE, t_y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
+
+			// Draw the tile sprite
+			t_window.draw(m_tileSprite);
+		}
+	}
+}
+
 TileType const World::getTileType(unsigned t_x, unsigned t_y, unsigned t_z) const
 {
 	return m_tiles[t_z][t_y][t_x];

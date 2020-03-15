@@ -72,8 +72,18 @@ void Game::render()
 {
 	m_window.clear();
 
-	m_world.draw(m_window);
-	m_player.draw(m_window);
+	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
+	{
+		for (unsigned y = 0; y < Globals::WORLD_WIDTH_Y; y++)
+		{
+			m_world.drawColumn(m_window, y, z);
+
+			if (m_player.getHeight() == z && m_player.getRow() == y)
+			{
+				m_player.draw(m_window);
+			}
+		}
+	}
 
 	m_window.display();
 }

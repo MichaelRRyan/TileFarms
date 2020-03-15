@@ -18,6 +18,16 @@ void Player::draw(sf::RenderWindow& t_window) const
 	t_window.draw(m_sprite);
 }
 
+unsigned const Player::getHeight() const
+{
+	return m_height;
+}
+
+unsigned const Player::getRow() const
+{
+	return m_sprite.getPosition().y / Globals::TILE_SIZE;
+}
+
 void Player::handleMovement()
 {
 	sf::Vector2f movementVector;
