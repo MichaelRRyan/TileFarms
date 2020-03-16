@@ -72,9 +72,9 @@ void Game::render()
 {
 	m_window.clear();
 
-	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
+	for (unsigned y = 0; y < Globals::WORLD_WIDTH_Y; y++)
 	{
-		for (unsigned y = 0; y < Globals::WORLD_WIDTH_Y; y++)
+		for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
 		{
 			m_world.drawColumn(m_window, y, z);
 
@@ -84,7 +84,7 @@ void Game::render()
 			}
 		}
 	}
-
+	
 	m_window.display();
 }
 

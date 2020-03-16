@@ -50,6 +50,10 @@ void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 			{
 				m_tileSprite.setTextureRect({ 0, 80, 16, 32 });
 			}
+			else if (TileType::Slope == m_tiles[t_z][t_y][x])
+			{
+				m_tileSprite.setTextureRect({ 16, 160, 16, 16 });
+			}
 
 			// Set the tile sprite's pixel position
 			m_tileSprite.setPosition(x * Globals::TILE_SIZE, t_y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
@@ -80,6 +84,19 @@ void World::loadTextures()
 
 void World::initialise()
 {
+	// Initialise world with all null tiles
+	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
+	{
+		for (unsigned y = 0; y < Globals::WORLD_WIDTH_Y; y++)
+		{
+			for (unsigned x = 0; x < Globals::WORLD_WIDTH_X; x++)
+			{
+				m_tiles[z][y][x] = TileType::Null;
+			}
+		}
+	}
+
+	// Generate world
 	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
 	{
 		for (unsigned y = 0; y < Globals::WORLD_WIDTH_Y; y++)
@@ -99,10 +116,11 @@ void World::initialise()
 					else if (rand() % 20 == 0)
 					{
 						m_tiles[z][y][x] = TileType::Grass;
-					}
-					else
-					{
-						m_tiles[z][y][x] = TileType::Null;
+
+						if (y + 1 < Globals::WORLD_WIDTH_Y)
+						{
+							m_tiles[z][y + 1][x] = TileType::Slope;
+						}
 					}
 				}
 				else
@@ -111,10 +129,17 @@ void World::initialise()
 					{
 						m_tiles[z][y][x] = TileType::Grass;
 						m_tiles[z - 1][y][x] = TileType::Grass;
-					}
-					else
-					{
-						m_tiles[z][y][x] = TileType::Null;
+
+						if (y + 1 < Globals::WORLD_WIDTH_Y)
+						{
+							m_tiles[z][y + 1][x] = TileType::Slope;
+							m_tiles[z - 1][y + 1][x] = TileType::Grass;
+						}
+
+						if (y + 2 < Globals::WORLD_WIDTH_Y)
+						{
+							m_tiles[z - 1][y + 2][x] = TileType::Slope;
+						}
 					}
 				}
 			}
@@ -122,4 +147,5 @@ void World::initialise()
 	}
 
 	m_tiles[1][8][8] = TileType::Null;
+	m_tiles[2][8][8] = TileType::Null;
 }
