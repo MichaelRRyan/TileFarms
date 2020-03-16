@@ -54,6 +54,9 @@ void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 			// Set the tile sprite's pixel position
 			m_tileSprite.setPosition(x * Globals::TILE_SIZE, t_y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
 
+			sf::Uint8 lightness{ static_cast<sf::Uint8>(255 - t_z * 50) };
+			m_tileSprite.setColor(sf::Color{ lightness, lightness, lightness });
+
 			// Draw the tile sprite
 			t_window.draw(m_tileSprite);
 		}
@@ -93,6 +96,10 @@ void World::initialise()
 					{
 						m_tiles[z][y][x] = TileType::Rock;
 					}
+					else if (rand() % 20 == 0)
+					{
+						m_tiles[z][y][x] = TileType::Grass;
+					}
 					else
 					{
 						m_tiles[z][y][x] = TileType::Null;
@@ -100,7 +107,15 @@ void World::initialise()
 				}
 				else
 				{
-					m_tiles[z][y][x] = TileType::Null;
+					if (rand() % 20 == 0)
+					{
+						m_tiles[z][y][x] = TileType::Grass;
+						m_tiles[z - 1][y][x] = TileType::Grass;
+					}
+					else
+					{
+						m_tiles[z][y][x] = TileType::Null;
+					}
 				}
 			}
 		}

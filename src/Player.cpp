@@ -63,7 +63,7 @@ void Player::handleMovement()
 		
 		if (targetTileX >= 0.0f && targetTileX < Globals::WORLD_WIDTH_X)
 		{
-			if (m_world.getTileType(static_cast<unsigned>(targetTileX), m_sprite.getPosition().y / Globals::TILE_SIZE, m_height) != TileType::Rock)
+			if (m_world.getTileType(static_cast<unsigned>(targetTileX), m_sprite.getPosition().y / Globals::TILE_SIZE, m_height) == TileType::Null)
 			{
 				m_velocity.x = movementVector.x;
 			}
@@ -74,7 +74,7 @@ void Player::handleMovement()
 
 		if (targetTileY >= 0.0f && targetTileY < Globals::WORLD_WIDTH_Y)
 		{
-			if (m_world.getTileType(m_sprite.getPosition().x / Globals::TILE_SIZE, static_cast<unsigned>(targetTileY), m_height) != TileType::Rock)
+			if (m_world.getTileType(m_sprite.getPosition().x / Globals::TILE_SIZE, static_cast<unsigned>(targetTileY), m_height) == TileType::Null)
 			{
 				m_velocity.y = movementVector.y;
 			}
