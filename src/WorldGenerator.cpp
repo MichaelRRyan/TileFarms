@@ -18,7 +18,7 @@ void WorldGenerator::generateWorld(World& t_world)
 	{
 		for (int y = 0; y < Globals::WORLD_WIDTH_Y; y++)
 		{
-			int z = (int)(fPerlinNoise2D[y * nOutputWidth + x] * 3.0f);
+			int z = (int)(fPerlinNoise2D[y * nOutputWidth + x] * Globals::WORLD_HEIGHT - 1);
 
 			for (int curZ = z; curZ >= 0; curZ--)
 			{
