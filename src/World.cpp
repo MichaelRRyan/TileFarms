@@ -8,33 +8,28 @@ World::World()
 
 void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 {
-	for (unsigned x = 0; x < Globals::WORLD_WIDTH_X; x++)
+	unsigned startX = (t_window.getView().getCenter().x - t_window.getView().getSize().x / 2.0f) / Globals::TILE_SIZE;
+	unsigned endX = startX + (t_window.getView().getSize().x / Globals::TILE_SIZE) + 2;
+
+	if (endX > Globals::WORLD_WIDTH_X)
 	{
-		if (TileType::Null != m_tiles[t_z][t_y][x].m_type)
+		endX = Globals::WORLD_WIDTH_X ;
+	}
+
+	for (unsigned x = startX; x < endX; x++)
+	{
+		if (TileType::Null != m_tiles[t_z][t_y][x].m_type) // If the tile to be rendered is not null
 		{
-			m_tileSprite.setTextureRect(m_tiles[t_z][t_y][x].m_textureRect);
-
-			// Set the tile sprite's pixel position
-			m_tileSprite.setPosition(x * Globals::TILE_SIZE, t_y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
-
-			/*switch (t_z)
+			if (t_z + 1 < Globals::WORLD_HEIGHT && TileType::Null == m_tiles[t_z + 1][t_y][x].m_type) // If the tile is not covered
 			{
-			case 0:
-				m_tileSprite.setColor(sf::Color{ 255, 0, 0 });
-				break;
-			case 1:
-				m_tileSprite.setColor(sf::Color{ 0, 255, 0 });
-				break;
-			case 2:
-				m_tileSprite.setColor(sf::Color{ 0, 0, 255 });
-				break;
-			}*/
+				m_tileSprite.setTextureRect(m_tiles[t_z][t_y][x].m_textureRect);
 
-			//sf::Uint8 lightness{ static_cast<sf::Uint8>(255 - t_z * 50) };
-			//m_tileSprite.setColor(sf::Color{ lightness, lightness, lightness });
+				// Set the tile sprite's pixel position
+				m_tileSprite.setPosition(x * Globals::TILE_SIZE, t_y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
 
-			// Draw the tile sprite
-			t_window.draw(m_tileSprite);
+				// Draw the tile sprite
+				t_window.draw(m_tileSprite);
+			}
 		}
 	}
 }

@@ -75,7 +75,15 @@ void Game::render()
 {
 	m_window.clear();
 
-	for (unsigned y = 0; y < Globals::WORLD_WIDTH_Y; y++)
+	unsigned startY = (m_window.getView().getCenter().y - m_window.getView().getSize().y / 2.0f) / Globals::TILE_SIZE;
+	unsigned endY = startY + (m_window.getView().getSize().y / Globals::TILE_SIZE) + 2;
+
+	if (endY > Globals::WORLD_WIDTH_Y)
+	{
+		endY = Globals::WORLD_WIDTH_Y;
+	}
+
+	for (unsigned y = startY; y < endY; y++)
 	{
 		for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
 		{
