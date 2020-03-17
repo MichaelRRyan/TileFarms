@@ -13,6 +13,12 @@ Player::Player(World& t_world) :
 
 void Player::update()
 {
+	if (m_height > 0 && m_world.getTileType(getX(), getY(), m_height - 1) == TileType::Null)
+	{
+		m_height--;
+		std::cout << "Fell. Level: " << m_height << std::endl;
+	}
+
 	handleMovement();
 	animate();
 }
@@ -27,9 +33,32 @@ unsigned const Player::getHeight() const
 	return m_height;
 }
 
-unsigned const Player::getRow() const
+unsigned const Player::getY() const
 {
 	return m_sprite.getPosition().y / Globals::TILE_SIZE;
+}
+
+unsigned const Player::getX() const
+{
+	return m_sprite.getPosition().x / Globals::TILE_SIZE;
+}
+
+void Player::setup()
+{
+	int x = m_sprite.getPosition().x / Globals::TILE_SIZE;
+	int y = m_sprite.getPosition().y / Globals::TILE_SIZE;
+
+	for (int z = Globals::WORLD_HEIGHT - 1; z >= 0; z--)
+	{
+		if (m_world.getTileType(x, y, z) == TileType::Null)
+		{
+			m_height = z;
+		}
+		else
+		{
+			break;
+		}
+	}
 }
 
 void Player::handleMovement()

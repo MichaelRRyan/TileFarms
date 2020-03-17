@@ -142,17 +142,23 @@
   <ItemGroup>
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\PerlinNoiseGenerator.cpp" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\Tile.cpp" />
     <ClCompile Include="src\VectorMath.cpp" />
     <ClCompile Include="src\World.cpp" />
+    <ClCompile Include="src\WorldGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\Globals.h" />
+    <ClInclude Include="include\PerlinNoiseGenerator.h" />
     <ClInclude Include="include\Player.h" />
+    <ClInclude Include="include\Tile.h" />
     <ClInclude Include="include\TileType.h" />
     <ClInclude Include="include\VectorMath.h" />
     <ClInclude Include="include\World.h" />
+    <ClInclude Include="include\WorldGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

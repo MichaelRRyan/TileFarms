@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "World.h"
 #include "VectorMath.h"
 
@@ -16,7 +17,10 @@ public:
 	void draw(sf::RenderWindow & t_window) const;
 
 	unsigned const getHeight() const;
-	unsigned const getRow() const;
+	unsigned const getY() const;
+	unsigned const getX() const;
+
+	void setup();
 
 private:
 

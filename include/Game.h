@@ -7,6 +7,7 @@
 #include "Globals.h"
 #include "World.h"
 #include "Player.h"
+#include "WorldGenerator.h"
 
 /// <summary>
 /// The game's main class. Keeps the game running at 60

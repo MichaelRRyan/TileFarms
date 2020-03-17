@@ -78,7 +78,7 @@ void Game::render()
 		{
 			m_world.drawColumn(m_window, y, z);
 
-			if (m_player.getHeight() == z && m_player.getRow() == y)
+			if (m_player.getHeight() == z && m_player.getY() == y)
 			{
 				m_player.draw(m_window);
 			}
@@ -91,7 +91,8 @@ void Game::render()
 ///////////////////////////////////////////////////////////////////
 void Game::setupShapes()
 {
-
+	WorldGenerator::generateWorld(m_world);
+	m_player.setup();
 }
 
 ///////////////////////////////////////////////////////////////////

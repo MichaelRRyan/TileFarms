@@ -6,60 +6,32 @@ World::World()
 	loadTextures();
 }
 
-void World::draw(sf::RenderWindow& t_window)
-{
-	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
-	{
-		for (unsigned y = 0; y < Globals::WORLD_WIDTH_Y; y++)
-		{
-			for (unsigned x = 0; x < Globals::WORLD_WIDTH_X; x++)
-			{
-				if (TileType::Null != m_tiles[z][y][x])
-				{
-					if (TileType::Grass == m_tiles[z][y][x])
-					{
-						m_tileSprite.setTextureRect({ 0, 64, 16, 16 });
-					}
-					else if (TileType::Rock == m_tiles[z][y][x])
-					{
-						m_tileSprite.setTextureRect({ 0, 80, 16, 32 });
-					}
-
-					// Set the tile sprite's pixel position
-					m_tileSprite.setPosition(x * Globals::TILE_SIZE, y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
-
-					// Draw the tile sprite
-					t_window.draw(m_tileSprite);
-				}
-			}
-		}
-	}
-}
-
 void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 {
 	for (unsigned x = 0; x < Globals::WORLD_WIDTH_X; x++)
 	{
-		if (TileType::Null != m_tiles[t_z][t_y][x])
+		if (TileType::Null != m_tiles[t_z][t_y][x].m_type)
 		{
-			if (TileType::Grass == m_tiles[t_z][t_y][x])
-			{
-				m_tileSprite.setTextureRect({ 0, 64, 16, 16 });
-			}
-			else if (TileType::Rock == m_tiles[t_z][t_y][x])
-			{
-				m_tileSprite.setTextureRect({ 0, 80, 16, 32 });
-			}
-			else if (TileType::Slope == m_tiles[t_z][t_y][x])
-			{
-				m_tileSprite.setTextureRect({ 16, 160, 16, 16 });
-			}
+			m_tileSprite.setTextureRect(m_tiles[t_z][t_y][x].m_textureRect);
 
 			// Set the tile sprite's pixel position
 			m_tileSprite.setPosition(x * Globals::TILE_SIZE, t_y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
 
-			sf::Uint8 lightness{ static_cast<sf::Uint8>(255 - t_z * 50) };
-			m_tileSprite.setColor(sf::Color{ lightness, lightness, lightness });
+			/*switch (t_z)
+			{
+			case 0:
+				m_tileSprite.setColor(sf::Color{ 255, 0, 0 });
+				break;
+			case 1:
+				m_tileSprite.setColor(sf::Color{ 0, 255, 0 });
+				break;
+			case 2:
+				m_tileSprite.setColor(sf::Color{ 0, 0, 255 });
+				break;
+			}*/
+
+			//sf::Uint8 lightness{ static_cast<sf::Uint8>(255 - t_z * 50) };
+			//m_tileSprite.setColor(sf::Color{ lightness, lightness, lightness });
 
 			// Draw the tile sprite
 			t_window.draw(m_tileSprite);
@@ -69,7 +41,17 @@ void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 
 TileType const World::getTileType(unsigned t_x, unsigned t_y, unsigned t_z) const
 {
-	return m_tiles[t_z][t_y][t_x];
+	return m_tiles[t_z][t_y][t_x].m_type;
+}
+
+void World::setTile(TileType t_tileType, int t_x, int t_y, int t_z)
+{
+	m_tiles[t_z][t_y][t_x].setType(t_tileType);
+}
+
+void World::setTile(TileType t_tileType, sf::IntRect t_textureRect, int t_x, int t_y, int t_z)
+{
+	m_tiles[t_z][t_y][t_x].setType(t_tileType, t_textureRect);
 }
 
 void World::loadTextures()
@@ -91,11 +73,14 @@ void World::initialise()
 		{
 			for (unsigned x = 0; x < Globals::WORLD_WIDTH_X; x++)
 			{
-				m_tiles[z][y][x] = TileType::Null;
+				m_tiles[z][y][x].setType(TileType::Null);
 			}
 		}
 	}
+}
 
+void World::generate()
+{
 	// Generate world
 	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
 	{
@@ -105,21 +90,21 @@ void World::initialise()
 			{
 				if (0 == z)
 				{
-					m_tiles[z][y][x] = TileType::Grass;
+					m_tiles[z][y][x].setType(TileType::Grass);
 				}
 				else if (1 == z)
 				{
 					if (rand() % 5 == 0)
 					{
-						m_tiles[z][y][x] = TileType::Rock;
+						m_tiles[z][y][x].setType(TileType::Rock);
 					}
 					else if (rand() % 20 == 0)
 					{
-						m_tiles[z][y][x] = TileType::Grass;
+						m_tiles[z][y][x].setType(TileType::Grass);
 
 						if (y + 1 < Globals::WORLD_WIDTH_Y)
 						{
-							m_tiles[z][y + 1][x] = TileType::Slope;
+							m_tiles[z][y + 1][x].setType(TileType::Slope);
 						}
 					}
 				}
@@ -127,18 +112,18 @@ void World::initialise()
 				{
 					if (rand() % 20 == 0)
 					{
-						m_tiles[z][y][x] = TileType::Grass;
-						m_tiles[z - 1][y][x] = TileType::Grass;
+						m_tiles[z][y][x].setType(TileType::Grass);
+						m_tiles[z - 1][y][x].setType(TileType::Grass);
 
 						if (y + 1 < Globals::WORLD_WIDTH_Y)
 						{
-							m_tiles[z][y + 1][x] = TileType::Slope;
-							m_tiles[z - 1][y + 1][x] = TileType::Grass;
+							m_tiles[z][y + 1][x].setType(TileType::Slope);
+							m_tiles[z - 1][y + 1][x].setType(TileType::Grass);
 						}
 
 						if (y + 2 < Globals::WORLD_WIDTH_Y)
 						{
-							m_tiles[z - 1][y + 2][x] = TileType::Slope;
+							m_tiles[z - 1][y + 2][x].setType(TileType::Slope);
 						}
 					}
 				}
@@ -146,6 +131,6 @@ void World::initialise()
 		}
 	}
 
-	m_tiles[1][8][8] = TileType::Null;
-	m_tiles[2][8][8] = TileType::Null;
+	m_tiles[1][8][8].setType(TileType::Null);
+	m_tiles[2][8][8].setType(TileType::Null);
 }

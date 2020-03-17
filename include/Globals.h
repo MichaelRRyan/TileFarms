@@ -6,7 +6,7 @@ namespace Globals
 
 	unsigned const WORLD_WIDTH_X{ 20 };
 	unsigned const WORLD_WIDTH_Y{ 16 };
-	unsigned const WORLD_HEIGHT{ 3 };
+	unsigned const WORLD_HEIGHT{ 4 };
 
 	float const TILE_SIZE{ 16.0f };
 
