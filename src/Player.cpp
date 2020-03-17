@@ -6,7 +6,8 @@ Player::Player(World& t_world) :
 	m_height{ 1 },
 	m_velocity{ 0.0f, 0.0f },
 	m_characterNumber{ 3 },
-	m_animationSpeed{ 10.0f }
+	m_animationSpeed{ 10.0f },
+	m_DEFAULT_MOVE_SPEED{ 0.5f }
 {
 	loadTextures();
 }
@@ -61,10 +62,52 @@ void Player::setup()
 	}
 }
 
+void Player::setView(sf::RenderWindow& m_window)
+{
+	sf::View view = m_window.getView();
+
+	sf::Vector2f vectorToPlayer{ m_sprite.getPosition() - view.getCenter() };
+
+	view.setCenter(view.getCenter() + vectorToPlayer / 20.0f);
+
+	// Left screen boundary
+	if (view.getCenter().x - view.getSize().x / 2.0f < 0.0f)
+	{
+		view.setCenter(view.getSize().x / 2.0f, view.getCenter().y);
+	}
+
+	// Top screen boundary
+	if (view.getCenter().y - view.getSize().y / 2.0f < 0.0f)
+	{
+		view.setCenter(view.getCenter().x, view.getSize().y / 2.0f);
+	}
+
+	// Right screen boundary
+	if (view.getCenter().x + view.getSize().x / 2.0f > Globals::WORLD_WIDTH_X * Globals::TILE_SIZE)
+	{
+		view.setCenter(Globals::WORLD_WIDTH_X * Globals::TILE_SIZE - view.getSize().x / 2.0f, view.getCenter().y);
+	}
+
+	// Bottom screen boundary
+	if (view.getCenter().y + view.getSize().y / 2.0f > Globals::WORLD_WIDTH_Y * Globals::TILE_SIZE)
+	{
+		view.setCenter(view.getCenter().x, Globals::WORLD_WIDTH_Y * Globals::TILE_SIZE - view.getSize().y / 2.0f);
+	}
+
+
+	m_window.setView(view);
+}
+
 void Player::handleMovement()
 {
 	sf::Vector2f inputVector;
 	m_velocity = { 0.0f, 0.0f };
+	m_moveSpeed = m_DEFAULT_MOVE_SPEED;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+	{
+		m_moveSpeed = m_DEFAULT_MOVE_SPEED * 3.0f;
+	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{

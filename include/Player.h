@@ -22,6 +22,8 @@ public:
 
 	void setup();
 
+	void setView(sf::RenderWindow & m_window);
+
 private:
 
 	void handleMovement();
@@ -35,6 +37,7 @@ private:
 
 	World & m_world;
 
+	float const m_DEFAULT_MOVE_SPEED;
 	float m_moveSpeed;
 
 	unsigned m_height; // Height in tiles

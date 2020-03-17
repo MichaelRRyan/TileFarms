@@ -13,6 +13,8 @@ Game::Game() :
 	view.setCenter(view.getCenter() / Globals::VIEW_SCALE);
 	m_window.setView(view);
 
+	m_window.setVerticalSyncEnabled(true);
+
 	setupShapes();
 }
 
@@ -65,6 +67,7 @@ void Game::update(sf::Time t_deltaTime)
 	}
 
 	m_player.update();
+	m_player.setView(m_window);
 }
 
 ///////////////////////////////////////////////////////////////////
