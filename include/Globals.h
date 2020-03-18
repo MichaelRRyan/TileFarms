@@ -17,6 +17,8 @@ namespace Globals
 	unsigned const WINDOW_WIDTH{ 1000u };
 	unsigned const WINDOW_HEIGHT{ 800u };
 
+	std::string const GAME_TITLE{ "Tile Farms" };
+
 }
 
 #endif // !GLOBALS_H

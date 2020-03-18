@@ -37,6 +37,8 @@ private:
 
 	Player m_player;
 
+	bool m_fullScreen;
+
 };
 
 #endif // !GAME

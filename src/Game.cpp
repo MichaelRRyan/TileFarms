@@ -4,9 +4,10 @@
 
 ///////////////////////////////////////////////////////////////////
 Game::Game() :
-	m_window{ sf::VideoMode{ Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT, 32u }, "Basic Game" },
+	m_window{ sf::VideoMode{ Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT, 32u }, Globals::GAME_TITLE },
 	m_exitGame{ false },
-	m_player{ m_world }
+	m_player{ m_world },
+	m_fullScreen{ false }
 {
 	sf::View view = m_window.getDefaultView();
 	view.setSize(view.getSize() / Globals::VIEW_SCALE);
@@ -54,6 +55,29 @@ void Game::processEvents()
 		if (sf::Event::Closed == nextEvent.type) // check if the close window button is clicked on.
 		{
 			m_window.close();
+		}
+		else if (sf::Event::KeyPressed == nextEvent.type)
+		{
+			if (sf::Keyboard::F11 == nextEvent.key.code)
+			{
+				if (m_fullScreen) // Switch to full screen
+				{
+					m_window.create(sf::VideoMode{ Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT, 32u }, Globals::GAME_TITLE);
+				}
+				else // Switch out of full screen
+				{
+					m_window.create(sf::VideoMode::getDesktopMode(), Globals::GAME_TITLE, sf::Style::Fullscreen);
+				}
+				
+				// Reset the view
+				sf::View view = m_window.getDefaultView();
+				view.setSize(view.getSize() / Globals::VIEW_SCALE);
+				view.setCenter(view.getCenter() / Globals::VIEW_SCALE);
+				m_window.setView(view);
+
+				// Toggle the full screen bool
+				m_fullScreen = !m_fullScreen;
+			}
 		}
 	}
 }
