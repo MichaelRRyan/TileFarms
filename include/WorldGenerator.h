@@ -10,8 +10,13 @@ class WorldGenerator
 {
 public:
 
-	static void generateWorld(World& t_world);
+	static void generateWorld(World & t_world);
 
+private:
+
+	static void removeNoise(World & t_world);
+
+	static void addSlopes(World & t_world);
 };
 
 #endif // !WORLD_GENERATOR_H

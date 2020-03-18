@@ -27,6 +27,11 @@ void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 				// Set the tile sprite's pixel position
 				m_tileSprite.setPosition(x * Globals::TILE_SIZE, t_y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
 
+#ifdef GENERATOR_DEBUG
+				sf::Uint8 value{ static_cast<sf::Uint8>(1.0 * t_z / Globals::WORLD_HEIGHT * 155.0 + 100.0) };
+				m_tileSprite.setColor(sf::Color{ value, value, value });
+#endif // GENERATOR_DEBUG
+
 				// Draw the tile sprite
 				t_window.draw(m_tileSprite);
 			}

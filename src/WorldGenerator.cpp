@@ -27,6 +27,136 @@ void WorldGenerator::generateWorld(World& t_world)
 		}
 	}
 
+	removeNoise(t_world);
+
+	addSlopes(t_world);
+}
+
+sf::Vector2i removeNoiseTile(World & t_world, int t_x, int t_y, int t_z)
+{
+	sf::Vector2i connectedTile{ -1, -1 }; // Used to keep a reference to the indices of any connected tiles
+
+	// Check each direction for connected tiles
+	// Left
+	if (t_x - 1 >= 0 && TileType::Null != t_world.getTileType(t_x - 1, t_y, t_z))
+	{
+		// No need to check for a previous connected tile as this is the first check (see next if statement)
+		connectedTile = { t_x - 1, t_y };
+	}
+	// Right
+	if (t_x + 1 < Globals::WORLD_WIDTH_X && TileType::Null != t_world.getTileType(t_x + 1, t_y, t_z))
+	{
+		if (connectedTile.x != -1) // If there's another connected tile, continue to the next iteration
+		{
+			return { -1, -1 };
+		}
+
+		connectedTile = { t_x + 1, t_y };
+}
+	// Up
+	if (t_y - 1 >= 0 && TileType::Null != t_world.getTileType(t_x, t_y - 1, t_z))
+	{
+		if (connectedTile.x != -1) // If there's another connected tile, continue to the next iteration
+		{
+			return { -1, -1 };
+		}
+
+		connectedTile = { t_x, t_y - 1 };
+	}
+	// Down
+	if (t_y + 1 < Globals::WORLD_WIDTH_Y && TileType::Null != t_world.getTileType(t_x, t_y + 1, t_z))
+	{
+		if (connectedTile.x != -1) // If there's another connected tile, continue to the next iteration
+		{
+			return { -1, -1 };
+		}
+
+		connectedTile = { t_x, t_y + 1 };
+	}
+
+	// If we get here without continuing to the next iteration,
+	// the tile is not touching two other tiles, and should be removed
+	t_world.setTile(TileType::Null, t_x, t_y, t_z);
+
+	return connectedTile;
+}
+
+void WorldGenerator::removeNoise(World& t_world)
+{
+#ifdef GENERATOR_DEBUG
+	sf::RenderWindow window{ sf::VideoMode{ 800u, 600u, 32u }, "Window" };
+
+	sf::RectangleShape shape{ { Globals::TILE_SIZE, Globals::TILE_SIZE } };
+	shape.setFillColor(sf::Color::Transparent);
+
+	shape.setOutlineColor(sf::Color{ 255, 0, 0, 255 });
+	shape.setOutlineThickness(2.0f);
+#endif // GENERATOR_DEBUG
+
+	// Clear up small bumps
+	for (int z = Globals::WORLD_HEIGHT - 1; z >= 0; z--) // Loop from the heighest level downards
+	{
+		for (int y = 0; y < Globals::WORLD_WIDTH_Y; y++) // Loop from the northmost point to the southmost
+		{
+			for (int x = 0; x < Globals::WORLD_WIDTH_X; x++) // Loop from the westmost point to the eastmost
+			{
+				if (TileType::Null != t_world.getTileType(x, y, z)) // If the current tile is not null
+				{
+					sf::Vector2i nextTile = removeNoiseTile(t_world, x, y, z);
+
+					while (-1 != nextTile.x)
+					{
+#ifdef GENERATOR_DEBUG
+						window.clear();
+
+						for (int z = 0; z < Globals::WORLD_HEIGHT; z++)
+						{
+							for (int y = 0; y < Globals::WORLD_WIDTH_Y; y++)
+							{
+								t_world.drawColumn(window, y, z);
+							}
+						}
+
+						shape.setPosition(nextTile.x * Globals::TILE_SIZE, nextTile.y * Globals::TILE_SIZE);
+						window.draw(shape);
+
+						window.display();
+
+						while (window.isOpen())
+						{
+							bool nextIteration = false;
+							sf::Event sfEvent;
+
+							while (window.pollEvent(sfEvent))
+							{
+								if (sf::Event::Closed == sfEvent.type)
+								{
+									window.close();
+								}
+								else if (sf::Event::KeyPressed == sfEvent.type)
+								{
+									nextIteration = true;
+									break;
+								}
+							}
+
+							if (nextIteration)
+							{
+								break;
+							}
+						}
+#endif // GENERATOR_DEBUG
+
+						nextTile = removeNoiseTile(t_world, nextTile.x, nextTile.y, z);
+					}
+				}
+			}
+		}
+	}
+}
+
+void WorldGenerator::addSlopes(World& t_world)
+{
 	// Set slopes
 	for (int z = Globals::WORLD_HEIGHT - 1; z >= 0; z--)
 	{

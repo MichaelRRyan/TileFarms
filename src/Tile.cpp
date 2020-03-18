@@ -4,10 +4,13 @@ void Tile::setType(TileType t_type)
 {
 	m_type = t_type;
 
+	int leftOffset; // Needs initialisation before the switch statement
+
 	switch (m_type)
 	{
 	case TileType::Grass:
-		m_textureRect = { 0, 64, 16, 16 };
+		leftOffset = (rand() % 3) * 16; // Pick a random grass tile from the three
+		m_textureRect = { leftOffset, 64, 16, 16 };
 		break;
 	case TileType::Rock:
 		m_textureRect = { 0, 80, 16, 32 };

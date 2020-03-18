@@ -1,6 +1,8 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+//#define GENERATOR_DEBUG
+
 namespace Globals
 {
 

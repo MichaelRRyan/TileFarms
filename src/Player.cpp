@@ -5,7 +5,7 @@ Player::Player(World& t_world) :
 	m_moveSpeed{ 0.5f },
 	m_height{ 1 },
 	m_velocity{ 0.0f, 0.0f },
-	m_characterNumber{ 3 },
+	m_characterNumber{ 10 },
 	m_animationSpeed{ 10.0f },
 	m_DEFAULT_MOVE_SPEED{ 0.5f }
 {
@@ -187,13 +187,13 @@ void Player::animate()
 			textureDir = 0;
 		}
 
-		int frame = static_cast<int>(m_animationClock.getElapsedTime().asSeconds() * m_moveSpeed * m_animationSpeed) % 3;
+		int frame = static_cast<int>(m_animationClock.getElapsedTime().asSeconds() * m_moveSpeed * m_animationSpeed) % 4;
 
-		m_sprite.setTextureRect({ frame * 16, (m_characterNumber + textureDir) * 32, 16, 32 });
+		m_sprite.setTextureRect({ frame * 24, (m_characterNumber + textureDir) * 32, 24, 32 });
 	}
 	else // If not moving
 	{
-		m_sprite.setTextureRect({ 16, (m_characterNumber + textureDir) * 32, 16, 32 });
+		m_sprite.setTextureRect({ 24, (m_characterNumber + textureDir) * 32, 24, 32 });
 	}
 }
 
@@ -206,7 +206,7 @@ void Player::loadTextures()
 
 	m_sprite.setTexture(m_spriteSheet);
 
-	m_sprite.setTextureRect({ 16, m_characterNumber * 32, 16, 32 });
-	m_sprite.setOrigin(Globals::TILE_SIZE / 2.0f, Globals::TILE_SIZE * 2.0);
+	m_sprite.setTextureRect({ 24, m_characterNumber * 32, 24, 32 });
+	m_sprite.setOrigin(12.0f /*Globals::TILE_SIZE / 2.0f*/, Globals::TILE_SIZE * 2.0);
 	m_sprite.setPosition(Globals::TILE_SIZE * 8.5f, Globals::TILE_SIZE * 8.5f);
 }
