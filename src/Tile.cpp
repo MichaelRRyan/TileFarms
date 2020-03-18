@@ -18,8 +18,11 @@ void Tile::setType(TileType t_type)
 	case TileType::Slope:
 		m_textureRect = { 16, 160, 16, 16 };
 		break;
+	case TileType::Water:
+		m_textureRect = { 64, 144, 16, 16 };
+		break;
 	default:
-		m_textureRect = { 0, 0, 0, 0, };
+		m_textureRect = { 0, 0, 0, 0 };
 		break;
 	}
 }

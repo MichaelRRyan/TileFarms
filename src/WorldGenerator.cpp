@@ -18,11 +18,18 @@ void WorldGenerator::generateWorld(World& t_world)
 	{
 		for (int y = 0; y < Globals::WORLD_WIDTH_Y; y++)
 		{
-			int z = (int)(fPerlinNoise2D[y * nOutputWidth + x] * Globals::WORLD_HEIGHT - 1);
+			int z = (int)(fPerlinNoise2D[y * nOutputWidth + x] * Globals::WORLD_HEIGHT);
 
-			for (int curZ = z; curZ >= 0; curZ--)
+			if (z == 0)
 			{
-				t_world.setTile(TileType::Grass, x, y, curZ);
+				t_world.setTile(TileType::Water, x, y, 0);
+			}
+			else
+			{
+				for (int curZ = z - 1; curZ >= 0; curZ--)
+				{
+					t_world.setTile(TileType::Grass, x, y, curZ);
+				}
 			}
 		}
 	}
@@ -155,6 +162,76 @@ void WorldGenerator::removeNoise(World& t_world)
 	}
 }
 
+void addEdgeTile(World& t_world, TileType t_replaceType, TileType t_targetType, int x, int y, int z, int t_imageOffsetX, int t_imageOffsetY)
+{
+	// Left
+	if (x - 1 >= 0 && t_targetType == t_world.getTileType(x - 1, y, z))
+	{
+		// If there's nothing above either
+		if (y - 1 >= 0 && t_targetType == t_world.getTileType(x, y - 1, z))
+		{
+			t_world.setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY, 16, 16 }, x, y, z);
+		}
+		// If there's nothing below either
+		else if (y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == t_world.getTileType(x, y + 1, z))
+		{
+			t_world.setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY + 32, 16, 16 }, x, y, z);
+		}
+		else
+		{
+			t_world.setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY + 16, 16, 16 }, x, y, z);
+		}
+	}
+	// Right
+	else if (x + 1 < Globals::WORLD_WIDTH_X && t_targetType == t_world.getTileType(x + 1, y, z))
+	{
+		// If there's nothing above either
+		if (y - 1 >= 0 && t_targetType == t_world.getTileType(x, y - 1, z))
+		{
+			t_world.setTile(t_replaceType, { t_imageOffsetX + 32, t_imageOffsetY, 16, 16 }, x, y, z);
+		}
+		// If there's nothing below either
+		else if (y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == t_world.getTileType(x, y + 1, z))
+		{
+			t_world.setTile(t_replaceType, { t_imageOffsetX + 32, t_imageOffsetY + 32, 16, 16 }, x, y, z);
+		}
+		else
+		{
+			t_world.setTile(t_replaceType, { t_imageOffsetX + 32, t_imageOffsetY + 16, 16, 16 }, x, y, z);
+		}
+	}
+	// Up
+	else if (y - 1 >= 0 && t_targetType == t_world.getTileType(x, y - 1, z))
+	{
+		t_world.setTile(t_replaceType, { t_imageOffsetX + 16, t_imageOffsetY, 16, 16 }, x, y, z);
+	}
+	// Down
+	else if (y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == t_world.getTileType(x, y + 1, z))
+	{
+		t_world.setTile(t_replaceType, { t_imageOffsetX + 16, t_imageOffsetY + 32, 16, 16 }, x, y, z);
+	}
+	// Top left
+	else if (x - 1 >= 0 && y - 1 >= 0 && t_targetType == t_world.getTileType(x - 1, y - 1, z))
+	{
+		t_world.setTile(t_replaceType, { t_imageOffsetX + 16, t_imageOffsetY + 64, 16, 16 }, x, y, z);
+	}
+	// Top Right
+	else if (x + 1 < Globals::WORLD_WIDTH_X && y - 1 >= 0 && t_targetType == t_world.getTileType(x + 1, y - 1, z))
+	{
+		t_world.setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY + 64, 16, 16 }, x, y, z);
+	}
+	// Bottom Right
+	else if (x + 1 < Globals::WORLD_WIDTH_X && y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == t_world.getTileType(x + 1, y + 1, z))
+	{
+		t_world.setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY + 48, 16, 16 }, x, y, z);
+	}
+	// Bottom Left
+	else if (x - 1 >= 0 && y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == t_world.getTileType(x - 1, y + 1, z))
+	{
+		t_world.setTile(t_replaceType, { t_imageOffsetX + 16, t_imageOffsetY + 48, 16, 16 }, x, y, z);
+	}
+}
+
 void WorldGenerator::addSlopes(World& t_world)
 {
 	// Set slopes
@@ -166,73 +243,20 @@ void WorldGenerator::addSlopes(World& t_world)
 			{
 				if (TileType::Grass == t_world.getTileType(x, y, z))
 				{
-					// Left
-					if (x - 1 >= 0 && TileType::Null == t_world.getTileType(x - 1, y, z))
-					{
-						// If there's nothing above either
-						if (y - 1 >= 0 && TileType::Null == t_world.getTileType(x, y - 1, z))
-						{
-							t_world.setTile(TileType::Slope, { 0, 128, 16, 16 }, x, y, z);
-						}
-						// If there's nothing below either
-						else if (y + 1 < Globals::WORLD_WIDTH_Y && TileType::Null == t_world.getTileType(x, y + 1, z))
-						{
-							t_world.setTile(TileType::Slope, { 0, 160, 16, 16 }, x, y, z);
-						}
-						else
-						{
-							t_world.setTile(TileType::Slope, { 0, 144, 16, 16 }, x, y, z);
-						}
-					}
-					// Right
-					else if (x + 1 < Globals::WORLD_WIDTH_X && TileType::Null == t_world.getTileType(x + 1, y, z))
-					{
-						// If there's nothing above either
-						if (y - 1 >= 0 && TileType::Null == t_world.getTileType(x, y - 1, z))
-						{
-							t_world.setTile(TileType::Slope, { 32, 128, 16, 16 }, x, y, z);
-						}
-						// If there's nothing below either
-						else if (y + 1 < Globals::WORLD_WIDTH_Y && TileType::Null == t_world.getTileType(x, y + 1, z))
-						{
-							t_world.setTile(TileType::Slope, { 32, 160, 16, 16 }, x, y, z);
-						}
-						else
-						{
-							t_world.setTile(TileType::Slope, { 32, 144, 16, 16 }, x, y, z);
-						}
-					}
-					// Up
-					else if (y - 1 >= 0 && TileType::Null == t_world.getTileType(x, y - 1, z))
-					{
-						t_world.setTile(TileType::Slope, { 16, 128, 16, 16 }, x, y, z);
-					}
-					// Down
-					else if (y + 1 < Globals::WORLD_WIDTH_Y && TileType::Null == t_world.getTileType(x, y + 1, z))
-					{
-						t_world.setTile(TileType::Slope, { 16, 160, 16, 16 }, x, y, z);
-					}
-					// Top left
-					else if (x - 1 >= 0 && y - 1 >= 0 && TileType::Null == t_world.getTileType(x - 1, y - 1, z))
-					{
-						t_world.setTile(TileType::Slope, { 16, 192, 16, 16 }, x, y, z);
-					}
-					// Top Right
-					else if (x + 1 < Globals::WORLD_WIDTH_X && y - 1 >= 0 && TileType::Null == t_world.getTileType(x + 1, y - 1, z))
-					{
-						t_world.setTile(TileType::Slope, { 0, 192, 16, 16 }, x, y, z);
-					}
-					// Bottom Right
-					else if (x + 1 < Globals::WORLD_WIDTH_X && y + 1 < Globals::WORLD_WIDTH_Y && TileType::Null == t_world.getTileType(x + 1, y + 1, z))
-					{
-						t_world.setTile(TileType::Slope, { 0, 176, 16, 16 }, x, y, z);
-					}
-					// Bottom Left
-					else if (x - 1 >= 0 && y + 1 < Globals::WORLD_WIDTH_Y && TileType::Null == t_world.getTileType(x - 1, y + 1, z))
-					{
-						t_world.setTile(TileType::Slope, { 16, 176, 16, 16 }, x, y, z);
-					}
+					addEdgeTile(t_world, TileType::Slope, TileType::Null, x, y, z, 0, 128);
 				}
+			}
+		}
+	}
+
+	// Add water corners
+	for (int y = 0; y < Globals::WORLD_WIDTH_Y; y++)
+	{
+		for (int x = 0; x < Globals::WORLD_WIDTH_X; x++)
+		{
+			if (TileType::Grass == t_world.getTileType(x, y, 0))
+			{
+				addEdgeTile(t_world, TileType::Grass, TileType::Water, x, y, 0, 48, 128);
 			}
 		}
 	}

@@ -14,8 +14,8 @@ namespace Globals
 
 	float const VIEW_SCALE{ 4.0f };
 
-	unsigned const WINDOW_WIDTH{ 1000u };
-	unsigned const WINDOW_HEIGHT{ 800u };
+	unsigned const WINDOW_WIDTH{ 1280u };
+	unsigned const WINDOW_HEIGHT{ 720u };
 
 	std::string const GAME_TITLE{ "Tile Farms" };
 
