@@ -2,6 +2,8 @@
 
 void WorldGenerator::generateWorld(World& t_world)
 {
+	t_world.initialise(); // Reset the world with null values
+
 	// 2D noise variables
 	int nOutputWidth = 800;
 	int nOutputHeight = 800;
@@ -39,6 +41,8 @@ void WorldGenerator::generateWorld(World& t_world)
 	addSlopes(t_world);
 
 	addTrees(t_world);
+
+	addPlants(t_world);
 }
 
 sf::Vector2i removeNoiseTile(World & t_world, int t_x, int t_y, int t_z)
@@ -297,6 +301,36 @@ void WorldGenerator::addTrees(World& t_world)
 								t_world.setTile(TileType::Tree, { 112, 128, 16, 48 }, x, y, z);
 								t_world.setTile(TileType::Tree, { 128, 128, 16, 48 }, x + 1, y, z);
 							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void WorldGenerator::addPlants(World& t_world)
+{
+	for (int z = Globals::WORLD_HEIGHT - 1; z >= 1; z--) // Loop from the heighest level downards
+	{
+		for (int y = 0; y < Globals::WORLD_WIDTH_Y; y++) // Loop from the northmost point to the southmost
+		{
+			for (int x = 0; x < Globals::WORLD_WIDTH_X; x++) // Loop from the westmost point to the eastmost
+			{
+				if (TileType::Null == t_world.getTileType(x, y, z)) // Make sure the current tile is null
+				{
+					if (TileType::Water == t_world.getTileType(x, y, z - 1)) // Check if the tile below is water
+					{
+						if (rand() % 10 == 0)
+						{
+							t_world.setTile(TileType::WaterLily, x, y, z);
+						}
+					}
+					else if (TileType::Grass == t_world.getTileType(x, y, z - 1)) // Check if the tile below is water
+					{
+						if (rand() % 60 == 0)
+						{
+							t_world.setTile(TileType::Bush, x, y, z);
 						}
 					}
 				}

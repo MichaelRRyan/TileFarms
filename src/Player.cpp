@@ -46,6 +46,8 @@ unsigned const Player::getX() const
 
 void Player::setup()
 {
+	m_sprite.setPosition(Globals::TILE_SIZE * 8.5f, Globals::TILE_SIZE * 8.5f);
+
 	int x = m_sprite.getPosition().x / Globals::TILE_SIZE;
 	int y = m_sprite.getPosition().y / Globals::TILE_SIZE;
 
@@ -208,5 +210,4 @@ void Player::loadTextures()
 
 	m_sprite.setTextureRect({ 24, m_characterNumber * 32, 24, 32 });
 	m_sprite.setOrigin(12.0f /*Globals::TILE_SIZE / 2.0f*/, Globals::TILE_SIZE * 2.0);
-	m_sprite.setPosition(Globals::TILE_SIZE * 8.5f, Globals::TILE_SIZE * 8.5f);
 }

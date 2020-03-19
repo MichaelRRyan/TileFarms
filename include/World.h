@@ -13,6 +13,8 @@ public:
 
 	World();
 
+	void initialise();
+
 	void drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z);
 
 	TileType const getTileType(unsigned t_x, unsigned t_y, unsigned t_z) const;
@@ -24,8 +26,6 @@ public:
 private:
 
 	void loadTextures();
-	void initialise();
-	void generate();
 
 	std::array<std::array<std::array<Tile, Globals::WORLD_WIDTH_X>, Globals::WORLD_WIDTH_Y>, Globals::WORLD_HEIGHT> m_tiles;
 

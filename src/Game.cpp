@@ -78,6 +78,13 @@ void Game::processEvents()
 				// Toggle the full screen bool
 				m_fullScreen = !m_fullScreen;
 			}
+#ifdef _DEBUG
+			else if (sf::Keyboard::R == nextEvent.key.code)
+			{
+				WorldGenerator::generateWorld(m_world);
+				m_player.setup();
+			}
+#endif // _DEBUG
 		}
 	}
 }

@@ -18,7 +18,9 @@ private:
 
 	static void addSlopes(World & t_world);
 
-	static void addTrees(World& t_world);
+	static void addTrees(World & t_world);
+
+	static void addPlants(World & t_world);
 };
 
 #endif // !WORLD_GENERATOR_H
