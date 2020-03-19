@@ -26,7 +26,8 @@ public:
 
 private:
 
-	void handleMovement();
+	void handleInput();
+	void handleMovement(sf::Vector2f const& t_inputVector);
 
 	void animate();
 

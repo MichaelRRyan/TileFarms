@@ -1,6 +1,8 @@
 #ifndef GAME
 #define GAME
 
+//#define CINEMATIC_CAMERA
+
 /// @Author Michael Rainsford Ryan
 
 #include <SFML/Graphics.hpp>
@@ -28,7 +30,7 @@ private:
 	void update(sf::Time t_deltaTime);
 	void render();
 
-	void setupShapes();
+	void resetGame();
 
 	sf::RenderWindow m_window;
 	bool m_exitGame;
@@ -39,6 +41,9 @@ private:
 
 	bool m_fullScreen;
 
+#ifdef CINEMATIC_CAMERA
+	sf::Vector2f cameraTarget;
+#endif
 };
 
 #endif // !GAME

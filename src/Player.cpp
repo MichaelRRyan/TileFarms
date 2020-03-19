@@ -20,7 +20,7 @@ void Player::update()
 		std::cout << "Fell. Level: " << m_height << std::endl;
 	}
 
-	handleMovement();
+	handleInput();
 	animate();
 }
 
@@ -100,10 +100,9 @@ void Player::setView(sf::RenderWindow& m_window)
 	m_window.setView(view);
 }
 
-void Player::handleMovement()
+void Player::handleInput()
 {
 	sf::Vector2f inputVector;
-	m_velocity = { 0.0f, 0.0f };
 	m_moveSpeed = m_DEFAULT_MOVE_SPEED;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
@@ -128,13 +127,20 @@ void Player::handleMovement()
 		inputVector.y++;
 	}
 
-	if (vmath::length(inputVector) != 0.0f)
+	handleMovement(inputVector);
+}
+
+void Player::handleMovement(sf::Vector2f const& t_inputVector)
+{
+	m_velocity = { 0.0f, 0.0f };
+
+	if (vmath::length(t_inputVector) != 0.0f)
 	{
-		sf::Vector2f const movementVector = vmath::unitVector(inputVector) * m_moveSpeed;
+		sf::Vector2f const movementVector = vmath::unitVector(t_inputVector) * m_moveSpeed;
 
 		// Horisontal collisions
 		float targetTileX = (m_sprite.getPosition().x + movementVector.x + (Globals::TILE_SIZE / 3.0f * vmath::sign(movementVector.x))) / Globals::TILE_SIZE;
-		
+
 		if (targetTileX >= 0.0f && targetTileX < Globals::WORLD_WIDTH_X)
 		{
 			if (m_world.getTileType(static_cast<unsigned>(targetTileX), m_sprite.getPosition().y / Globals::TILE_SIZE, m_height) == TileType::Null)

@@ -4,10 +4,10 @@
 
 ///////////////////////////////////////////////////////////////////
 Game::Game() :
-	m_window{ sf::VideoMode{ Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT, 32u }, Globals::GAME_TITLE },
+	m_window{ sf::VideoMode::getDesktopMode(), Globals::GAME_TITLE, sf::Style::Fullscreen },
 	m_exitGame{ false },
 	m_player{ m_world },
-	m_fullScreen{ false }
+	m_fullScreen{ true }
 {
 	sf::View view = m_window.getDefaultView();
 	view.setSize(view.getSize() / Globals::VIEW_SCALE);
@@ -16,7 +16,13 @@ Game::Game() :
 
 	m_window.setVerticalSyncEnabled(true);
 
-	setupShapes();
+	resetGame();
+
+#ifdef CINEMATIC_CAMERA
+	// Set the camera target location
+	cameraTarget.x = rand() % static_cast<int>(Globals::WORLD_WIDTH_X* Globals::TILE_SIZE - m_window.getView().getSize().x) + (m_window.getView().getSize().x / 2.0f);
+	cameraTarget.y = rand() % static_cast<int>(Globals::WORLD_WIDTH_Y* Globals::TILE_SIZE - m_window.getView().getSize().y) + (m_window.getView().getSize().y / 2.0f);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -60,11 +66,11 @@ void Game::processEvents()
 		{
 			if (sf::Keyboard::F11 == nextEvent.key.code)
 			{
-				if (m_fullScreen) // Switch to full screen
+				if (m_fullScreen) // Switch out of full screen
 				{
 					m_window.create(sf::VideoMode{ Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT, 32u }, Globals::GAME_TITLE);
 				}
-				else // Switch out of full screen
+				else // Switch to full screen
 				{
 					m_window.create(sf::VideoMode::getDesktopMode(), Globals::GAME_TITLE, sf::Style::Fullscreen);
 				}
@@ -98,7 +104,33 @@ void Game::update(sf::Time t_deltaTime)
 	}
 
 	m_player.update();
+
+#ifndef CINEMATIC_CAMERA
 	m_player.setView(m_window);
+	
+#else
+	sf::Vector2f vectorToTarget{ cameraTarget - m_window.getView().getCenter() };
+	float distanceToTarget{ sqrtf(vectorToTarget.x * vectorToTarget.x + vectorToTarget.y * vectorToTarget.y) };
+	sf::Vector2f unitVector = vectorToTarget / distanceToTarget;
+
+	m_window.setView({ m_window.getView().getCenter() + (unitVector / 6.0f), m_window.getView().getSize() });
+
+	if (distanceToTarget < 1.0f)
+	{
+		// Set the camera pos
+		cameraTarget.x = rand() % static_cast<int>(Globals::WORLD_WIDTH_X * Globals::TILE_SIZE - m_window.getView().getSize().x) + (m_window.getView().getSize().x / 2.0f);
+		cameraTarget.y = rand() % static_cast<int>(Globals::WORLD_WIDTH_Y * Globals::TILE_SIZE - m_window.getView().getSize().y) + (m_window.getView().getSize().y / 2.0f);
+
+		m_window.setView({ cameraTarget, m_window.getView().getSize() });
+
+		// Set the target pos
+		cameraTarget.x = rand() % static_cast<int>(Globals::WORLD_WIDTH_X * Globals::TILE_SIZE - m_window.getView().getSize().x) + (m_window.getView().getSize().x / 2.0f);
+		cameraTarget.y = rand() % static_cast<int>(Globals::WORLD_WIDTH_Y * Globals::TILE_SIZE - m_window.getView().getSize().y) + (m_window.getView().getSize().y / 2.0f);
+
+		// Randomise the world 
+		resetGame();
+}
+#endif // CINEMATIC_CAMERA
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -121,10 +153,12 @@ void Game::render()
 		{
 			m_world.drawColumn(m_window, y, z);
 
+#ifndef CINEMATIC_CAMERA
 			if (m_player.getHeight() == z && m_player.getY() == y)
 			{
 				m_player.draw(m_window);
 			}
+#endif // !CINEMATIC_CAMERA
 		}
 	}
 	
@@ -132,7 +166,7 @@ void Game::render()
 }
 
 ///////////////////////////////////////////////////////////////////
-void Game::setupShapes()
+void Game::resetGame()
 {
 	WorldGenerator::generateWorld(m_world);
 	m_player.setup();
