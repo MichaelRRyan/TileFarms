@@ -7,20 +7,26 @@ Player::Player(World& t_world) :
 	m_characterNumber{ 0 },
 	m_animationSpeed{ 10.0f },
 	m_DEFAULT_MOVE_SPEED{ 0.5f },
-	m_moveSpeed{ m_DEFAULT_MOVE_SPEED }
+	m_moveSpeed{ m_DEFAULT_MOVE_SPEED },
+	m_state{ State::Walking },
+	m_direction{ 0, 1 } 
 {
 	loadTextures();
 }
 
 void Player::update()
 {
-	if (m_height > 0 && m_world.getTileType(getX(), getY(), m_height - 1) == TileType::Null)
+	if (State::Walking == m_state)
 	{
-		m_height--;
-		std::cout << "Fell. Level: " << m_height << std::endl;
+		if (m_height > 0 && m_world.getTileType(getX(), getY(), m_height - 1) == TileType::Null)
+		{
+			m_height--;
+			std::cout << "Fell. Level: " << m_height << std::endl;
+		}
+
+		handleInput();
 	}
 
-	handleInput();
 	animate();
 }
 
@@ -101,12 +107,48 @@ void Player::setView(sf::RenderWindow& m_window)
 		view.setCenter(view.getCenter().x, Globals::WORLD_WIDTH_Y * Globals::TILE_SIZE - view.getSize().y / 2.0f);
 	}
 
-
 	m_window.setView(view);
 }
 
 void Player::handleInput()
 {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	{
+		// Find the tile index of the tile in front of the player
+		sf::Vector2i nextTile{ static_cast<int>(getX()) + m_direction.x, static_cast<int>(getY()) + m_direction.y };
+
+		if (nextTile.x >= 0 && nextTile.x < Globals::WORLD_WIDTH_X
+			&& nextTile.y >= 0 && nextTile.y < Globals::WORLD_WIDTH_Y)
+		{
+			if (TileType::Slope == m_world.getTileType(nextTile.x, nextTile.y, m_height))
+			{
+				// Find the tile after the next tile
+				nextTile += m_direction;
+
+				if (m_height + 1 < Globals::WORLD_HEIGHT)
+				{
+					if (nextTile.x >= 0 && nextTile.x < Globals::WORLD_WIDTH_X
+						&& nextTile.y >= 0 && nextTile.y < Globals::WORLD_WIDTH_Y)
+					{
+						if (TileType::Null == m_world.getTileType(nextTile.x, nextTile.y, m_height + 1)
+							&& TileType::Grass == m_world.getTileType(nextTile.x, nextTile.y, m_height))
+						{
+							m_previousPosition = m_sprite.getPosition();
+							m_targetPosition = static_cast<sf::Vector2f>(nextTile)* Globals::TILE_SIZE + (sf::Vector2f{ 0.5f, 0.5f } *Globals::TILE_SIZE);
+
+							m_height++;
+
+							m_state = State::Climbing;
+							m_animationClock.restart();
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Basic movement
 	sf::Vector2f inputVector;
 	m_moveSpeed = m_DEFAULT_MOVE_SPEED;
 
@@ -177,36 +219,63 @@ void Player::animate()
 {
 	int textureDir = m_sprite.getTextureRect().top / 32 - m_characterNumber;
 
-	// Check if moving
-	if (m_velocity.x != 0.0f || m_velocity.y != 0.0f)
+	if (State::Walking == m_state)
 	{
-		// Set the texture direction depending on the direction we're facing
-		if (m_velocity.x > 0.0f)
+		// Check if moving
+		if (m_velocity.x != 0.0f || m_velocity.y != 0.0f)
 		{
-			textureDir = 1;
-			m_sprite.setScale(1.0f, 1.0f);
-		}
-		else if (m_velocity.x < 0.0f)
-		{
-			textureDir = 1;
-			m_sprite.setScale(-1.0f, 1.0f);
-		}
-		else if (m_velocity.y < 0.0f)
-		{
-			textureDir = 2;
-		}
-		else if (m_velocity.y > 0.0f)
-		{
-			textureDir = 0;
-		}
+			// Set the texture direction depending on the direction we're facing
+			if (m_velocity.x > 0.0f)
+			{
+				textureDir = 1;
+				m_sprite.setScale(1.0f, 1.0f);
+				m_direction = { 1, 0 };
+			}
+			else if (m_velocity.x < 0.0f)
+			{
+				textureDir = 1;
+				m_sprite.setScale(-1.0f, 1.0f);
+				m_direction = { -1, 0 };
+			}
+			else if (m_velocity.y < 0.0f)
+			{
+				textureDir = 2;
+				m_direction = { 0, -1 };
+			}
+			else if (m_velocity.y > 0.0f)
+			{
+				textureDir = 0;
+				m_direction = { 0, 1 };
+			}
 
-		int frame = static_cast<int>(m_animationClock.getElapsedTime().asSeconds() * m_moveSpeed * m_animationSpeed) % 4;
+			int frame = static_cast<int>(m_animationClock.getElapsedTime().asSeconds() * m_moveSpeed * m_animationSpeed) % 4;
 
-		m_sprite.setTextureRect({ frame * 16, (m_characterNumber + textureDir) * 32, 16, 32 });
+			m_sprite.setTextureRect({ frame * 16, (m_characterNumber + textureDir) * 32, 16, 32 });
+		}
+		else // If not moving
+		{
+			m_sprite.setTextureRect({ 0, (m_characterNumber + textureDir) * 32, 16, 32 });
+		}
 	}
-	else // If not moving
+	else if (State::Climbing == m_state)
 	{
-		m_sprite.setTextureRect({ 0, (m_characterNumber + textureDir) * 32, 16, 32 });
+		if (m_animationClock.getElapsedTime().asSeconds() < 1.0f)
+		{
+			sf::Vector2f newPosition = m_previousPosition + (m_targetPosition - m_previousPosition) * (m_animationClock.getElapsedTime().asSeconds() / 1.0f);
+
+			m_sprite.setPosition(newPosition);
+
+			int frame = 1 - static_cast<int>(m_animationClock.getElapsedTime().asSeconds() / 1.0f * 2.0f);
+
+			std::cout << frame << std::endl;
+
+			m_sprite.setTextureRect({ 80 + frame * 16, (m_characterNumber + textureDir) * 32, 16, 32 });
+		}
+		else
+		{
+			m_sprite.setPosition(m_targetPosition);
+			m_state = State::Walking;
+		}
 	}
 }
 

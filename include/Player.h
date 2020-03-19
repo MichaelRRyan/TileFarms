@@ -51,6 +51,18 @@ private:
 	float m_animationSpeed;
 
 	int m_characterNumber; // Character number in sprite sheet
+
+	enum class State
+	{
+		Walking,
+		Climbing,
+		Falling
+	} m_state;
+
+	sf::Vector2i m_direction;
+
+	sf::Vector2f m_previousPosition;
+	sf::Vector2f m_targetPosition;
 };
 
 #endif // !PLAYER_H
