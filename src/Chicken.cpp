@@ -13,7 +13,7 @@ Chicken::Chicken(World& t_world) :
 
 Chicken::Chicken(World& t_world, sf::Vector2f t_pixelPos, unsigned t_height) :
 	m_world{ t_world },
-	m_DEFAULT_MOVE_SPEED{ 1.0f },
+	m_DEFAULT_MOVE_SPEED{ 0.5f },
 	m_moveSpeed{ m_DEFAULT_MOVE_SPEED },
 	m_height{ t_height },
 	m_velocity{ 0.0f, 0.0f },
@@ -27,7 +27,7 @@ Chicken::Chicken(World& t_world, sf::Vector2f t_pixelPos, unsigned t_height) :
 void Chicken::update()
 {
 	// Random chance to do something
-	if (rand() % 10 == 0)
+	if (rand() % 30 == 0)
 	{
 		if (rand() % 2 == 0)
 		{

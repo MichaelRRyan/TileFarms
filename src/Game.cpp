@@ -197,8 +197,6 @@ void Game::resetGame()
 	}
 
 	m_chickens.clear();
-
-	m_chickens.push_back(new Chicken(m_world, m_player.getPixelPosition(), m_player.getHeight()));
 }
 
 ///////////////////////////////////////////////////////////////////
