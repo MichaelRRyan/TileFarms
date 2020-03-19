@@ -20,7 +20,7 @@ void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 	{
 		if (TileType::Null != m_tiles[t_z][t_y][x].m_type) // If the tile to be rendered is not null
 		{
-			if (t_z + 1 < Globals::WORLD_HEIGHT && TileType::Null == m_tiles[t_z + 1][t_y][x].m_type) // If the tile is not covered
+			if (t_z + 1 < Globals::WORLD_HEIGHT && TileType::Grass != m_tiles[t_z + 1][t_y][x].m_type) // If the tile is not covered
 			{
 				m_tileSprite.setTextureRect(m_tiles[t_z][t_y][x].m_textureRect);
 

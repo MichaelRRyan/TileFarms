@@ -7,7 +7,8 @@ enum class TileType
 	Grass = 1,
 	Rock = 2,
 	Slope = 3,
-	Water = 4
+	Water = 4,
+	Tree = 5
 };
 
 #endif // !TILE_TYPE_H

@@ -17,6 +17,8 @@ private:
 	static void removeNoise(World & t_world);
 
 	static void addSlopes(World & t_world);
+
+	static void addTrees(World& t_world);
 };
 
 #endif // !WORLD_GENERATOR_H

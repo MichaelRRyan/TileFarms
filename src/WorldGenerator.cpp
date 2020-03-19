@@ -37,6 +37,8 @@ void WorldGenerator::generateWorld(World& t_world)
 	removeNoise(t_world);
 
 	addSlopes(t_world);
+
+	addTrees(t_world);
 }
 
 sf::Vector2i removeNoiseTile(World & t_world, int t_x, int t_y, int t_z)
@@ -257,6 +259,47 @@ void WorldGenerator::addSlopes(World& t_world)
 			if (TileType::Grass == t_world.getTileType(x, y, 0))
 			{
 				addEdgeTile(t_world, TileType::Grass, TileType::Water, x, y, 0, 48, 128);
+			}
+		}
+	}
+}
+
+void WorldGenerator::addTrees(World& t_world)
+{
+	for (int z = Globals::WORLD_HEIGHT - 1; z >= 1; z--) // Loop from the heighest level downards
+	{
+		for (int y = 1; y < Globals::WORLD_WIDTH_Y; y++) // Loop from the northmost point to the southmost
+		{
+			for (int x = 1; x < Globals::WORLD_WIDTH_X - 1; x++) // Loop from the westmost point to the eastmost
+			{
+				if (TileType::Null == t_world.getTileType(x, y, z)		// If the current tile is null
+					&& TileType::Grass == t_world.getTileType(x, y, z - 1)) // And the tile below is grass
+				{
+					// Check for space on the left and right
+					// No need for boundary checking as the loop starts from 1 and ends at WORLD_WIDTH_X - 1
+					if (TileType::Null == t_world.getTileType(x - 1, y, z)
+						&& TileType::Null == t_world.getTileType(x + 1, y, z)
+						&& TileType::Grass == t_world.getTileType(x - 1, y, z - 1)
+						&& TileType::Grass == t_world.getTileType(x + 1, y, z - 1))
+					{
+						// Check behind for space
+						if (TileType::Null == t_world.getTileType(x - 1, y - 1, z)
+							&& TileType::Null == t_world.getTileType(x, y - 1, z)
+							&& TileType::Null == t_world.getTileType(x + 1, y - 1, z)
+							&& TileType::Grass == t_world.getTileType(x - 1, y - 1, z - 1)
+							&& TileType::Grass == t_world.getTileType(x , y - 1, z - 1)
+							&& TileType::Grass == t_world.getTileType(x + 1, y - 1, z - 1))
+						{
+							// If there's space for a tree, place one 1 in 10 times
+							if (rand() % 30 == 0)
+							{
+								t_world.setTile(TileType::Tree, { 96, 128, 16, 48 }, x - 1, y, z);
+								t_world.setTile(TileType::Tree, { 112, 128, 16, 48 }, x, y, z);
+								t_world.setTile(TileType::Tree, { 128, 128, 16, 48 }, x + 1, y, z);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
