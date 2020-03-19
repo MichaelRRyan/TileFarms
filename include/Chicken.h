@@ -1,35 +1,29 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef CHICKEN_H
+#define CHICKEN_H
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "World.h"
 #include "VectorMath.h"
 
-class Player
+class Chicken
 {
 public:
+	Chicken(World& t_world);
 
-	Player(World & t_world);
+	Chicken(World& t_world, sf::Vector2f t_pixelPos, unsigned t_height);
 
 	void update();
 
-	void draw(sf::RenderWindow & t_window) const;
+	void draw(sf::RenderWindow& t_window) const;
 
 	unsigned const getHeight() const;
 	unsigned const getY() const;
 	unsigned const getX() const;
 
-	sf::Vector2f const & getPixelPosition() const;
-
-	void setup();
-
-	void setView(sf::RenderWindow & m_window);
+	sf::Vector2f const& getPixelPosition() const;
 
 private:
-
-	void handleInput();
-	void handleMovement(sf::Vector2f const& t_inputVector);
 
 	void animate();
 
@@ -38,7 +32,7 @@ private:
 	sf::Texture m_spriteSheet;
 	sf::Sprite m_sprite;
 
-	World & m_world;
+	World& m_world;
 
 	float const m_DEFAULT_MOVE_SPEED;
 	float m_moveSpeed;
@@ -50,7 +44,7 @@ private:
 	sf::Clock m_animationClock;
 	float m_animationSpeed;
 
-	int m_characterNumber; // Character number in sprite sheet
+	sf::Sprite m_shadow;
 };
 
-#endif // !PLAYER_H
+#endif // !CHICKEN_H

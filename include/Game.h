@@ -6,10 +6,12 @@
 /// @Author Michael Rainsford Ryan
 
 #include <SFML/Graphics.hpp>
+#include <vector>
 #include "Globals.h"
 #include "World.h"
 #include "Player.h"
 #include "WorldGenerator.h"
+#include "Chicken.h"
 
 /// <summary>
 /// The game's main class. Keeps the game running at 60
@@ -38,6 +40,8 @@ private:
 	World m_world;
 
 	Player m_player;
+
+	std::vector<Chicken *> m_chickens;
 
 	bool m_fullScreen;
 

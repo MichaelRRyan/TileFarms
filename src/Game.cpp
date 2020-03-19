@@ -87,8 +87,15 @@ void Game::processEvents()
 #ifdef _DEBUG
 			else if (sf::Keyboard::R == nextEvent.key.code)
 			{
-				WorldGenerator::generateWorld(m_world);
-				m_player.setup();
+				resetGame();
+			}
+			else if (sf::Keyboard::Escape == nextEvent.key.code)
+			{
+				m_window.close();
+			}
+			else if (sf::Keyboard::C == nextEvent.key.code)
+			{
+				m_chickens.push_back(new Chicken(m_world, m_player.getPixelPosition(), m_player.getHeight()));
 			}
 #endif // _DEBUG
 		}
@@ -101,6 +108,11 @@ void Game::update(sf::Time t_deltaTime)
 	if (m_exitGame)
 	{
 		m_window.close();
+	}
+
+	for (Chicken * chicken : m_chickens)
+	{
+		chicken->update();
 	}
 
 	m_player.update();
@@ -147,9 +159,9 @@ void Game::render()
 	}
 
 	
-	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
+	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++) // Loop from the bottom level to the top
 	{
-		for (unsigned y = startY; y < endY; y++)
+		for (unsigned y = startY; y < endY; y++) // Loop from north to south
 		{
 			m_world.drawColumn(m_window, y, z);
 
@@ -159,6 +171,14 @@ void Game::render()
 				m_player.draw(m_window);
 			}
 #endif // !CINEMATIC_CAMERA
+
+			for (Chicken const* chicken : m_chickens)
+			{
+				if (chicken->getHeight() == z && chicken->getY() == y)
+				{
+					chicken->draw(m_window);
+				}
+			}
 		}
 	}
 	
@@ -170,6 +190,15 @@ void Game::resetGame()
 {
 	WorldGenerator::generateWorld(m_world);
 	m_player.setup();
+
+	for (Chicken * chicken : m_chickens)
+	{
+		delete chicken;
+	}
+
+	m_chickens.clear();
+
+	m_chickens.push_back(new Chicken(m_world, m_player.getPixelPosition(), m_player.getHeight()));
 }
 
 ///////////////////////////////////////////////////////////////////

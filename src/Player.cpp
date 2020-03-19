@@ -2,12 +2,12 @@
 
 Player::Player(World& t_world) :
 	m_world{ t_world },
-	m_moveSpeed{ 0.5f },
 	m_height{ 1 },
 	m_velocity{ 0.0f, 0.0f },
 	m_characterNumber{ 0 },
 	m_animationSpeed{ 10.0f },
-	m_DEFAULT_MOVE_SPEED{ 0.5f }
+	m_DEFAULT_MOVE_SPEED{ 0.5f },
+	m_moveSpeed{ m_DEFAULT_MOVE_SPEED }
 {
 	loadTextures();
 }
@@ -42,6 +42,11 @@ unsigned const Player::getY() const
 unsigned const Player::getX() const
 {
 	return m_sprite.getPosition().x / Globals::TILE_SIZE;
+}
+
+sf::Vector2f const& Player::getPixelPosition() const
+{
+	return m_sprite.getPosition();
 }
 
 void Player::setup()
