@@ -114,9 +114,10 @@ void Game::render()
 		endY = Globals::WORLD_WIDTH_Y;
 	}
 
-	for (unsigned y = startY; y < endY; y++)
+	
+	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
 	{
-		for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++)
+		for (unsigned y = startY; y < endY; y++)
 		{
 			m_world.drawColumn(m_window, y, z);
 

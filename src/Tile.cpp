@@ -26,8 +26,8 @@ void Tile::setType(TileType t_type)
 		m_textureRect = { leftOffset, 80, 16, 16 };
 		break;
 	case TileType::Bush:
-		leftOffset = (rand() % 3 + 4) * 16; // Pick a random bush tile out of the three
-		m_textureRect = { leftOffset, 48, 16, 16 };
+		leftOffset = (rand() % 3 + 6) * 16; // Pick a random bush tile out of the three
+		m_textureRect = { leftOffset, 64, 16, 16 };
 		break;
 	default:
 		m_textureRect = { 0, 0, 0, 0 };

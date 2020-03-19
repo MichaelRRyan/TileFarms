@@ -5,7 +5,7 @@ Player::Player(World& t_world) :
 	m_moveSpeed{ 0.5f },
 	m_height{ 1 },
 	m_velocity{ 0.0f, 0.0f },
-	m_characterNumber{ 10 },
+	m_characterNumber{ 0 },
 	m_animationSpeed{ 10.0f },
 	m_DEFAULT_MOVE_SPEED{ 0.5f }
 {
@@ -144,7 +144,7 @@ void Player::handleMovement()
 		}
 
 		// Vertical collisions
-		float targetTileY = (m_sprite.getPosition().y + movementVector.y + (Globals::TILE_SIZE / 4.0f * vmath::sign(movementVector.y))) / Globals::TILE_SIZE;
+		float targetTileY = (m_sprite.getPosition().y + movementVector.y + (2.0f * vmath::sign(movementVector.y))) / Globals::TILE_SIZE;
 
 		if (targetTileY >= 0.0f && targetTileY < Globals::WORLD_WIDTH_Y)
 		{
@@ -191,23 +191,23 @@ void Player::animate()
 
 		int frame = static_cast<int>(m_animationClock.getElapsedTime().asSeconds() * m_moveSpeed * m_animationSpeed) % 4;
 
-		m_sprite.setTextureRect({ frame * 24, (m_characterNumber + textureDir) * 32, 24, 32 });
+		m_sprite.setTextureRect({ frame * 16, (m_characterNumber + textureDir) * 32, 16, 32 });
 	}
 	else // If not moving
 	{
-		m_sprite.setTextureRect({ 24, (m_characterNumber + textureDir) * 32, 24, 32 });
+		m_sprite.setTextureRect({ 0, (m_characterNumber + textureDir) * 32, 16, 32 });
 	}
 }
 
 void Player::loadTextures()
 {
-	if (!m_spriteSheet.loadFromFile("ASSETS/IMAGES/character_sheet.png"))
+	if (!m_spriteSheet.loadFromFile("ASSETS/IMAGES/character.png"))
 	{
 		throw("Error loading spritesheet");
 	}
 
 	m_sprite.setTexture(m_spriteSheet);
 
-	m_sprite.setTextureRect({ 24, m_characterNumber * 32, 24, 32 });
-	m_sprite.setOrigin(12.0f /*Globals::TILE_SIZE / 2.0f*/, Globals::TILE_SIZE * 2.0);
+	m_sprite.setTextureRect({ 0, m_characterNumber * 32, 16, 32 });
+	m_sprite.setOrigin(8.0f, 24.0f);
 }
