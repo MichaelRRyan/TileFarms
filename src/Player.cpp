@@ -112,44 +112,14 @@ void Player::setView(sf::RenderWindow& m_window)
 
 void Player::handleInput()
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	if (handleClimbEvent())
 	{
-		// Find the tile index of the tile in front of the player
-		sf::Vector2i nextTile{ static_cast<int>(getX()) + m_direction.x, static_cast<int>(getY()) + m_direction.y };
-
-		if (nextTile.x >= 0 && nextTile.x < Globals::WORLD_WIDTH_X
-			&& nextTile.y >= 0 && nextTile.y < Globals::WORLD_WIDTH_Y)
-		{
-			if (TileType::Slope == m_world.getTileType(nextTile.x, nextTile.y, m_height))
-			{
-				// Find the tile after the next tile
-				nextTile += m_direction;
-
-				if (m_height + 1 < Globals::WORLD_HEIGHT)
-				{
-					if (nextTile.x >= 0 && nextTile.x < Globals::WORLD_WIDTH_X
-						&& nextTile.y >= 0 && nextTile.y < Globals::WORLD_WIDTH_Y)
-					{
-						if (TileType::Null == m_world.getTileType(nextTile.x, nextTile.y, m_height + 1)
-							&& TileType::Grass == m_world.getTileType(nextTile.x, nextTile.y, m_height))
-						{
-							m_previousPosition = m_sprite.getPosition();
-							m_targetPosition = static_cast<sf::Vector2f>(nextTile)* Globals::TILE_SIZE + (sf::Vector2f{ 0.5f, 0.5f } *Globals::TILE_SIZE);
-
-							m_height++;
-
-							m_state = State::Climbing;
-							m_animationClock.restart();
-							return;
-						}
-					}
-				}
-			}
-		}
+		return;
 	}
 
+	handleDestroyEvent();
+
 	// Basic movement
-	sf::Vector2f inputVector;
 	m_moveSpeed = m_DEFAULT_MOVE_SPEED;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
@@ -157,24 +127,7 @@ void Player::handleInput()
 		m_moveSpeed = m_DEFAULT_MOVE_SPEED * 3.0f;
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-	{
-		inputVector.x--;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-	{
-		inputVector.x++;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-	{
-		inputVector.y--;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-	{
-		inputVector.y++;
-	}
-
-	handleMovement(inputVector);
+	handleMovement(getInputVector());
 }
 
 void Player::handleMovement(sf::Vector2f const& t_inputVector)
@@ -212,6 +165,89 @@ void Player::handleMovement(sf::Vector2f const& t_inputVector)
 	else // If not moving
 	{
 		m_animationClock.restart();
+	}
+}
+
+sf::Vector2f const Player::getInputVector() const
+{
+	sf::Vector2f inputVector;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		inputVector.x--;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		inputVector.x++;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	{
+		inputVector.y--;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	{
+		inputVector.y++;
+	}
+
+	return inputVector;
+}
+
+bool Player::handleClimbEvent()
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	{
+		// Find the tile index of the tile in front of the player
+		sf::Vector2i nextTile{ static_cast<int>(getX()) + m_direction.x, static_cast<int>(getY()) + m_direction.y };
+
+		if (nextTile.x >= 0 && nextTile.x < Globals::WORLD_WIDTH_X
+			&& nextTile.y >= 0 && nextTile.y < Globals::WORLD_WIDTH_Y)
+		{
+			if (TileType::Slope == m_world.getTileType(nextTile.x, nextTile.y, m_height))
+			{
+				// Find the tile after the next tile
+				nextTile += m_direction;
+
+				if (m_height + 1 < Globals::WORLD_HEIGHT)
+				{
+					if (nextTile.x >= 0 && nextTile.x < Globals::WORLD_WIDTH_X
+						&& nextTile.y >= 0 && nextTile.y < Globals::WORLD_WIDTH_Y)
+					{
+						if (TileType::Null == m_world.getTileType(nextTile.x, nextTile.y, m_height + 1)
+							&& TileType::Grass == m_world.getTileType(nextTile.x, nextTile.y, m_height))
+						{
+							m_previousPosition = m_sprite.getPosition();
+							m_targetPosition = static_cast<sf::Vector2f>(nextTile)* Globals::TILE_SIZE + (sf::Vector2f{ 0.5f, 0.5f } *Globals::TILE_SIZE);
+
+							m_height++;
+
+							m_state = State::Climbing;
+							m_animationClock.restart();
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+void Player::handleDestroyEvent()
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+	{
+		// Find the tile index of the tile in front of the player
+		sf::Vector2i nextTile{ static_cast<int>(getX()) + m_direction.x, static_cast<int>(getY()) + m_direction.y };
+
+		if (nextTile.x >= 0 && nextTile.x < Globals::WORLD_WIDTH_X
+			&& nextTile.y >= 0 && nextTile.y < Globals::WORLD_WIDTH_Y)
+		{
+			if (TileType::Null != m_world.getTileType(nextTile.x, nextTile.y, m_height))
+			{
+				m_world.setTile(TileType::Null, nextTile.x, nextTile.y, m_height);
+			}
+		}
 	}
 }
 

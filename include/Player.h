@@ -30,6 +30,10 @@ private:
 
 	void handleInput();
 	void handleMovement(sf::Vector2f const& t_inputVector);
+	sf::Vector2f const getInputVector() const;
+	bool handleClimbEvent();
+
+	void handleDestroyEvent();
 
 	void animate();
 
