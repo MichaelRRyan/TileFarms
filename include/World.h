@@ -23,6 +23,12 @@ public:
 
 	void setTile(TileType t_tileType, sf::IntRect t_textureRect, int t_x, int t_y, int t_z);
 
+	void setEdgeTile(TileType t_replaceType, TileType t_targetType, int x, int y, int z, int t_imageOffsetX, int t_imageOffsetY);
+
+	void updateTile(int x, int y, int z);
+
+	void destroyTile(int x, int y, int z);
+
 private:
 
 	void loadTextures();

@@ -69,6 +69,127 @@ void World::setTile(TileType t_tileType, sf::IntRect t_textureRect, int t_x, int
 	m_tiles[t_z][t_y][t_x].setType(t_tileType, t_textureRect);
 }
 
+void World::setEdgeTile(TileType t_replaceType, TileType t_targetType, int x, int y, int z, int t_imageOffsetX, int t_imageOffsetY)
+{
+	// Left
+	if (x - 1 >= 0 && t_targetType == getTileType(x - 1, y, z))
+	{
+		// If there's nothing above either
+		if (y - 1 >= 0 && t_targetType == getTileType(x, y - 1, z))
+		{
+			setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY, 16, 16 }, x, y, z);
+		}
+		// If there's nothing below either
+		else if (y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == getTileType(x, y + 1, z))
+		{
+			setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY + 32, 16, 16 }, x, y, z);
+		}
+		else
+		{
+			setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY + 16, 16, 16 }, x, y, z);
+		}
+	}
+	// Right
+	else if (x + 1 < Globals::WORLD_WIDTH_X && t_targetType == getTileType(x + 1, y, z))
+	{
+		// If there's nothing above either
+		if (y - 1 >= 0 && t_targetType == getTileType(x, y - 1, z))
+		{
+			setTile(t_replaceType, { t_imageOffsetX + 32, t_imageOffsetY, 16, 16 }, x, y, z);
+		}
+		// If there's nothing below either
+		else if (y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == getTileType(x, y + 1, z))
+		{
+			setTile(t_replaceType, { t_imageOffsetX + 32, t_imageOffsetY + 32, 16, 16 }, x, y, z);
+		}
+		else
+		{
+			setTile(t_replaceType, { t_imageOffsetX + 32, t_imageOffsetY + 16, 16, 16 }, x, y, z);
+		}
+	}
+	// Up
+	else if (y - 1 >= 0 && t_targetType == getTileType(x, y - 1, z))
+	{
+		setTile(t_replaceType, { t_imageOffsetX + 16, t_imageOffsetY, 16, 16 }, x, y, z);
+	}
+	// Down
+	else if (y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == getTileType(x, y + 1, z))
+	{
+		setTile(t_replaceType, { t_imageOffsetX + 16, t_imageOffsetY + 32, 16, 16 }, x, y, z);
+	}
+	// Top left
+	else if (x - 1 >= 0 && y - 1 >= 0 && t_targetType == getTileType(x - 1, y - 1, z))
+	{
+		setTile(t_replaceType, { t_imageOffsetX + 16, t_imageOffsetY + 64, 16, 16 }, x, y, z);
+	}
+	// Top Right
+	else if (x + 1 < Globals::WORLD_WIDTH_X && y - 1 >= 0 && t_targetType == getTileType(x + 1, y - 1, z))
+	{
+		setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY + 64, 16, 16 }, x, y, z);
+	}
+	// Bottom Right
+	else if (x + 1 < Globals::WORLD_WIDTH_X && y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == getTileType(x + 1, y + 1, z))
+	{
+		setTile(t_replaceType, { t_imageOffsetX, t_imageOffsetY + 48, 16, 16 }, x, y, z);
+	}
+	// Bottom Left
+	else if (x - 1 >= 0 && y + 1 < Globals::WORLD_WIDTH_Y && t_targetType == getTileType(x - 1, y + 1, z))
+	{
+		setTile(t_replaceType, { t_imageOffsetX + 16, t_imageOffsetY + 48, 16, 16 }, x, y, z);
+	}
+}
+
+void World::updateTile(int x, int y, int z)
+{
+	if (TileType::Grass == getTileType(x, y, z)
+		|| TileType::Slope == getTileType(x, y, z))
+	{
+		setTile(TileType::Grass, x, y, z);
+		setEdgeTile(TileType::Slope, TileType::Null, x, y, z, 0, 128);
+	}
+}
+
+void World::destroyTile(int x, int y, int z)
+{
+	setTile(TileType::Null, x, y, z);
+
+	// Update all adjecent tiles
+	if (x - 1 > 0)
+	{
+		updateTile(x - 1, y, z);
+
+		if (y - 1 > 0)
+		{
+			updateTile(x - 1, y - 1, z);
+		}
+		if (y + 1 < Globals::WORLD_WIDTH_Y)
+		{
+			updateTile(x - 1, y + 1, z);
+		}
+	}
+	if (x + 1 < Globals::WORLD_WIDTH_X)
+	{
+		updateTile(x + 1, y, z);
+
+		if (y - 1 > 0)
+		{
+			updateTile(x + 1, y - 1, z);
+		}
+		if (y + 1 < Globals::WORLD_WIDTH_Y)
+		{
+			updateTile(x + 1, y + 1, z);
+		}
+	}
+	if (y - 1 > 0)
+	{
+		updateTile(x, y - 1, z);
+	}
+	if (y + 1 < Globals::WORLD_WIDTH_Y)
+	{
+		updateTile(x, y + 1, z);
+	}
+}
+
 void World::loadTextures()
 {
 	if (!m_textureSheet.loadFromFile("ASSETS/IMAGES/Tile_sheet.png"))

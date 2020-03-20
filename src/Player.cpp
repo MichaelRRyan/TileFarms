@@ -245,7 +245,11 @@ void Player::handleDestroyEvent()
 		{
 			if (TileType::Null != m_world.getTileType(nextTile.x, nextTile.y, m_height))
 			{
-				m_world.setTile(TileType::Null, nextTile.x, nextTile.y, m_height);
+				if (m_height + 1 < Globals::WORLD_HEIGHT
+					&& TileType::Null == m_world.getTileType(nextTile.x, nextTile.y, m_height + 1))
+				{
+					m_world.destroyTile(nextTile.x, nextTile.y, m_height);
+				}
 			}
 		}
 	}
