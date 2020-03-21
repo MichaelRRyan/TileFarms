@@ -14,6 +14,7 @@ Player::Player(World& t_world) :
 	loadTextures();
 }
 
+///////////////////////////////////////////////////////////////////
 void Player::update()
 {
 	if (State::Walking == m_state)
@@ -30,31 +31,37 @@ void Player::update()
 	animate();
 }
 
+///////////////////////////////////////////////////////////////////
 void Player::draw(sf::RenderWindow& t_window) const
 {
 	t_window.draw(m_sprite);
 }
 
+///////////////////////////////////////////////////////////////////
 unsigned const Player::getHeight() const
 {
 	return m_height;
 }
 
+///////////////////////////////////////////////////////////////////
 unsigned const Player::getY() const
 {
 	return m_sprite.getPosition().y / Globals::TILE_SIZE;
 }
 
+///////////////////////////////////////////////////////////////////
 unsigned const Player::getX() const
 {
 	return m_sprite.getPosition().x / Globals::TILE_SIZE;
 }
 
+///////////////////////////////////////////////////////////////////
 sf::Vector2f const& Player::getPixelPosition() const
 {
 	return m_sprite.getPosition();
 }
 
+///////////////////////////////////////////////////////////////////
 void Player::setup()
 {
 	m_sprite.setPosition(Globals::TILE_SIZE * 8.5f, Globals::TILE_SIZE * 8.5f);
@@ -75,6 +82,7 @@ void Player::setup()
 	}
 }
 
+///////////////////////////////////////////////////////////////////
 void Player::setView(sf::RenderWindow& m_window)
 {
 	sf::View view = m_window.getView();
@@ -110,6 +118,7 @@ void Player::setView(sf::RenderWindow& m_window)
 	m_window.setView(view);
 }
 
+///////////////////////////////////////////////////////////////////
 void Player::handleInput()
 {
 	if (handleClimbEvent())
@@ -118,6 +127,7 @@ void Player::handleInput()
 	}
 
 	handleDestroyEvent();
+	handleBuildEvent();
 
 	// Basic movement
 	m_moveSpeed = m_DEFAULT_MOVE_SPEED;
@@ -130,6 +140,7 @@ void Player::handleInput()
 	handleMovement(getInputVector());
 }
 
+///////////////////////////////////////////////////////////////////
 void Player::handleMovement(sf::Vector2f const& t_inputVector)
 {
 	m_velocity = { 0.0f, 0.0f };
@@ -168,6 +179,7 @@ void Player::handleMovement(sf::Vector2f const& t_inputVector)
 	}
 }
 
+///////////////////////////////////////////////////////////////////
 sf::Vector2f const Player::getInputVector() const
 {
 	sf::Vector2f inputVector;
@@ -192,6 +204,7 @@ sf::Vector2f const Player::getInputVector() const
 	return inputVector;
 }
 
+///////////////////////////////////////////////////////////////////
 bool Player::handleClimbEvent()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
@@ -233,6 +246,7 @@ bool Player::handleClimbEvent()
 	return false;
 }
 
+///////////////////////////////////////////////////////////////////
 void Player::handleDestroyEvent()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
@@ -255,6 +269,33 @@ void Player::handleDestroyEvent()
 	}
 }
 
+///////////////////////////////////////////////////////////////////
+void Player::handleBuildEvent()
+{
+	// Check for key down
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+	{
+		// Find the tile index of the tile in front of the player
+		sf::Vector2i nextTile{ static_cast<int>(getX()) + m_direction.x, static_cast<int>(getY()) + m_direction.y };
+
+		// Check the tile is within world bounds
+		if (nextTile.x >= 0 && nextTile.x < Globals::WORLD_WIDTH_X
+			&& nextTile.y >= 0 && nextTile.y < Globals::WORLD_WIDTH_Y)
+		{
+			// Check if the tile is empty
+			if (TileType::Null == m_world.getTileType(nextTile.x, nextTile.y, m_height))
+			{
+				// Check that there is a tile underneath or is on the bottom of the world
+				if (m_height - 1 < 0 || TileType::Null != m_world.getTileType(nextTile.x, nextTile.y, m_height - 1))
+				{
+					m_world.buildTile(TileType::Grass, nextTile.x, nextTile.y, m_height);
+				}
+			}
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////
 void Player::animate()
 {
 	int textureDir = m_sprite.getTextureRect().top / 32 - m_characterNumber;
@@ -307,8 +348,6 @@ void Player::animate()
 
 			int frame = 1 - static_cast<int>(m_animationClock.getElapsedTime().asSeconds() / 1.0f * 2.0f);
 
-			std::cout << frame << std::endl;
-
 			m_sprite.setTextureRect({ 80 + frame * 16, (m_characterNumber + textureDir) * 32, 16, 32 });
 		}
 		else
@@ -319,6 +358,7 @@ void Player::animate()
 	}
 }
 
+///////////////////////////////////////////////////////////////////
 void Player::loadTextures()
 {
 	if (!m_spriteSheet.loadFromFile("ASSETS/IMAGES/character.png"))
@@ -331,3 +371,5 @@ void Player::loadTextures()
 	m_sprite.setTextureRect({ 0, m_characterNumber * 32, 16, 32 });
 	m_sprite.setOrigin(8.0f, 24.0f);
 }
+
+///////////////////////////////////////////////////////////////////

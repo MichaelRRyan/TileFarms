@@ -34,6 +34,7 @@ private:
 	bool handleClimbEvent();
 
 	void handleDestroyEvent();
+	void handleBuildEvent();
 
 	void animate();
 

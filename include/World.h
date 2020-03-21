@@ -27,7 +27,11 @@ public:
 
 	void updateTile(int x, int y, int z);
 
+	void updateAdjecent(int x, int y, int z);
+
 	void destroyTile(int x, int y, int z);
+
+	void buildTile(TileType t_type, int x, int y, int z);
 
 private:
 

@@ -1,11 +1,13 @@
 #include "World.h"
 
+///////////////////////////////////////////////////////////////////
 World::World()
 {
 	initialise();
 	loadTextures();
 }
 
+///////////////////////////////////////////////////////////////////
 void World::initialise()
 {
 	// Initialise world with all null tiles
@@ -21,6 +23,7 @@ void World::initialise()
 	}
 }
 
+///////////////////////////////////////////////////////////////////
 void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 {
 	unsigned startX = (t_window.getView().getCenter().x - t_window.getView().getSize().x / 2.0f) / Globals::TILE_SIZE;
@@ -35,7 +38,7 @@ void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 	{
 		if (TileType::Null != m_tiles[t_z][t_y][x].m_type) // If the tile to be rendered is not null
 		{
-			if (t_z + 1 < Globals::WORLD_HEIGHT && TileType::Grass != m_tiles[t_z + 1][t_y][x].m_type) // If the tile is not covered
+			if (t_z + 1 >= Globals::WORLD_HEIGHT || TileType::Grass != m_tiles[t_z + 1][t_y][x].m_type) // If the tile is not covered or is at the top of the world
 			{
 				m_tileSprite.setTextureRect(m_tiles[t_z][t_y][x].m_textureRect);
 
@@ -54,21 +57,25 @@ void World::drawColumn(sf::RenderWindow& t_window, unsigned t_y, unsigned t_z)
 	}
 }
 
+///////////////////////////////////////////////////////////////////
 TileType const World::getTileType(unsigned t_x, unsigned t_y, unsigned t_z) const
 {
 	return m_tiles[t_z][t_y][t_x].m_type;
 }
 
+///////////////////////////////////////////////////////////////////
 void World::setTile(TileType t_tileType, int t_x, int t_y, int t_z)
 {
 	m_tiles[t_z][t_y][t_x].setType(t_tileType);
 }
 
+///////////////////////////////////////////////////////////////////
 void World::setTile(TileType t_tileType, sf::IntRect t_textureRect, int t_x, int t_y, int t_z)
 {
 	m_tiles[t_z][t_y][t_x].setType(t_tileType, t_textureRect);
 }
 
+///////////////////////////////////////////////////////////////////
 void World::setEdgeTile(TileType t_replaceType, TileType t_targetType, int x, int y, int z, int t_imageOffsetX, int t_imageOffsetY)
 {
 	// Left
@@ -139,6 +146,7 @@ void World::setEdgeTile(TileType t_replaceType, TileType t_targetType, int x, in
 	}
 }
 
+///////////////////////////////////////////////////////////////////
 void World::updateTile(int x, int y, int z)
 {
 	if (TileType::Grass == getTileType(x, y, z)
@@ -149,47 +157,87 @@ void World::updateTile(int x, int y, int z)
 	}
 }
 
-void World::destroyTile(int x, int y, int z)
+///////////////////////////////////////////////////////////////////
+void World::updateAdjecent(int x, int y, int z)
 {
-	setTile(TileType::Null, x, y, z);
-
-	// Update all adjecent tiles
-	if (x - 1 > 0)
+	if (x - 1 >= 0) // Left
 	{
 		updateTile(x - 1, y, z);
 
-		if (y - 1 > 0)
+		if (y - 1 >= 0) // Top left
 		{
 			updateTile(x - 1, y - 1, z);
 		}
-		if (y + 1 < Globals::WORLD_WIDTH_Y)
+		if (y + 1 < Globals::WORLD_WIDTH_Y) // Bottom left
 		{
 			updateTile(x - 1, y + 1, z);
 		}
 	}
-	if (x + 1 < Globals::WORLD_WIDTH_X)
+	if (x + 1 < Globals::WORLD_WIDTH_X) // Right
 	{
 		updateTile(x + 1, y, z);
 
-		if (y - 1 > 0)
+		if (y - 1 >= 0) // Top right
 		{
 			updateTile(x + 1, y - 1, z);
 		}
-		if (y + 1 < Globals::WORLD_WIDTH_Y)
+		if (y + 1 < Globals::WORLD_WIDTH_Y) // Bottom left
 		{
 			updateTile(x + 1, y + 1, z);
 		}
 	}
-	if (y - 1 > 0)
+	if (y - 1 >= 0) // Top
 	{
 		updateTile(x, y - 1, z);
 	}
-	if (y + 1 < Globals::WORLD_WIDTH_Y)
+	if (y + 1 < Globals::WORLD_WIDTH_Y) // Bottom
 	{
 		updateTile(x, y + 1, z);
 	}
 }
 
+///////////////////////////////////////////////////////////////////
+void World::destroyTile(int x, int y, int z)
+{
+	if (TileType::Tree == getTileType(x, y, z))
+	{
+		setTile(TileType::Null, x, y, z);
+
+		if (x - 1 >= 0 && TileType::Tree == getTileType(x - 1, y, z))
+		{
+			setTile(TileType::Null, x - 1, y, z);
+		}
+		else if (x + 2 < Globals::WORLD_WIDTH_X && TileType::Tree == getTileType(x + 2, y, z))
+		{
+			setTile(TileType::Null, x + 2, y, z);
+		}
+
+		if (x + 1 < Globals::WORLD_WIDTH_X && TileType::Tree == getTileType(x + 1, y, z))
+		{
+			setTile(TileType::Null, x + 1, y, z);
+		}
+		else if (x - 2 >= 0 && TileType::Tree == getTileType(x - 2, y, z))
+		{
+			setTile(TileType::Null, x - 2, y, z);
+		}
+
+		return;
+	}
+
+	setTile(TileType::Null, x, y, z);
+
+	updateAdjecent(x, y, z);
+}
+
+///////////////////////////////////////////////////////////////////
+void World::buildTile(TileType t_type, int x, int y, int z)
+{
+	setTile(t_type, x, y, z);
+	updateTile(x, y, z);
+	updateAdjecent(x, y, z);
+}
+
+///////////////////////////////////////////////////////////////////
 void World::loadTextures()
 {
 	if (!m_textureSheet.loadFromFile("ASSETS/IMAGES/Tile_sheet.png"))
@@ -199,3 +247,5 @@ void World::loadTextures()
 
 	m_tileSprite.setTexture(m_textureSheet);
 }
+
+///////////////////////////////////////////////////////////////////
