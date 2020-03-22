@@ -97,6 +97,22 @@ void Game::processEvents()
 			{
 				m_chickens.push_back(new Chicken(m_world, m_player.getPixelPosition(), m_player.getHeight()));
 			}
+			else if (sf::Keyboard::T == nextEvent.key.code)
+			{
+				for (int i = 0; i < 8; i++)
+				{
+					if (sf::Joystick::isConnected(i))
+					{
+						std::cout << i << std::endl;
+
+						std::string info{ sf::Joystick::getIdentification(0).name + "\n"
+							+ std::to_string(sf::Joystick::getIdentification(0).productId) + "\n"
+							+ std::to_string(sf::Joystick::getIdentification(0).vendorId) };
+
+						std::cout << info << std::endl;
+					}
+				}
+			}
 #endif // _DEBUG
 		}
 	}

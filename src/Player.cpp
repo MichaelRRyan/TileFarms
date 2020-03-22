@@ -12,11 +12,21 @@ Player::Player(World& t_world) :
 	m_direction{ 0, 1 } 
 {
 	loadTextures();
+
+	if (m_controller.connect())
+	{
+		m_controller.setJoystickDeadzone(30.0f);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////
 void Player::update()
 {
+	if (m_controller.isConnected())
+	{
+		m_controller.update();
+	}
+
 	if (State::Walking == m_state)
 	{
 		if (m_height > 0 && m_world.getTileType(getX(), getY(), m_height - 1) == TileType::Null)
@@ -132,7 +142,12 @@ void Player::handleInput()
 	// Basic movement
 	m_moveSpeed = m_DEFAULT_MOVE_SPEED;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+	std::cout << vmath::length(m_controller.getCurrentState().LeftThumbStick) << std::endl;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
+		|| vmath::length(m_controller.getCurrentState().LeftThumbStick) > 80.0f
+		|| m_controller.getCurrentState().LTrigger > 0.0f
+		|| m_controller.getCurrentState().RTrigger > 0.0f)
 	{
 		m_moveSpeed = m_DEFAULT_MOVE_SPEED * 3.0f;
 	}
@@ -184,19 +199,27 @@ sf::Vector2f const Player::getInputVector() const
 {
 	sf::Vector2f inputVector;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
+		|| m_controller.getCurrentState().DpadLeft
+		|| m_controller.getCurrentState().LeftThumbStick.x < 0.0f)
 	{
 		inputVector.x--;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
+		|| m_controller.getCurrentState().DpadRight
+		|| m_controller.getCurrentState().LeftThumbStick.x > 0.0f)
 	{
 		inputVector.x++;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
+		|| m_controller.getCurrentState().DpadUp
+		|| m_controller.getCurrentState().LeftThumbStick.y < 0.0f)
 	{
 		inputVector.y--;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
+		|| m_controller.getCurrentState().DpadDown
+		|| m_controller.getCurrentState().LeftThumbStick.y > 0.0f)
 	{
 		inputVector.y++;
 	}
@@ -207,7 +230,8 @@ sf::Vector2f const Player::getInputVector() const
 ///////////////////////////////////////////////////////////////////
 bool Player::handleClimbEvent()
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)
+		|| m_controller.getCurrentState().FaceBottom)
 	{
 		// Find the tile index of the tile in front of the player
 		sf::Vector2i nextTile{ static_cast<int>(getX()) + m_direction.x, static_cast<int>(getY()) + m_direction.y };
@@ -249,7 +273,8 @@ bool Player::handleClimbEvent()
 ///////////////////////////////////////////////////////////////////
 void Player::handleDestroyEvent()
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)
+		|| m_controller.getCurrentState().FaceRight)
 	{
 		// Find the tile index of the tile in front of the player
 		sf::Vector2i nextTile{ static_cast<int>(getX()) + m_direction.x, static_cast<int>(getY()) + m_direction.y };
@@ -273,7 +298,8 @@ void Player::handleDestroyEvent()
 void Player::handleBuildEvent()
 {
 	// Check for key down
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)
+		|| m_controller.getCurrentState().FaceLeft)
 	{
 		// Find the tile index of the tile in front of the player
 		sf::Vector2i nextTile{ static_cast<int>(getX()) + m_direction.x, static_cast<int>(getY()) + m_direction.y };

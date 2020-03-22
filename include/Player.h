@@ -5,6 +5,7 @@
 #include <iostream>
 #include "World.h"
 #include "VectorMath.h"
+#include "Gamepad.h"
 
 class Player
 {
@@ -68,6 +69,8 @@ private:
 
 	sf::Vector2f m_previousPosition;
 	sf::Vector2f m_targetPosition;
+
+	Gamepad m_controller;
 };
 
 #endif // !PLAYER_H
