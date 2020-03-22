@@ -9,9 +9,11 @@ Player::Player(World& t_world) :
 	m_DEFAULT_MOVE_SPEED{ 0.5f },
 	m_moveSpeed{ m_DEFAULT_MOVE_SPEED },
 	m_state{ State::Walking },
-	m_direction{ 0, 1 } 
+	m_direction{ 0, 1 },
+	m_selectedTile{ TileType::Null }
 {
 	loadTextures();
+	loadFont();
 
 	if (m_controller.connect())
 	{
@@ -45,6 +47,15 @@ void Player::update()
 void Player::draw(sf::RenderWindow& t_window) const
 {
 	t_window.draw(m_sprite);
+}
+
+///////////////////////////////////////////////////////////////////
+void Player::drawInventory(sf::RenderWindow& t_window)
+{
+	m_inventoryText.setPosition(t_window.getView().getCenter() - t_window.getView().getSize() / 2.0f);
+	m_inventoryText.move(10.0f, 10.0f);
+
+	t_window.draw(m_inventoryText);
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -90,6 +101,9 @@ void Player::setup()
 			break;
 		}
 	}
+
+	m_inventory.clear();
+	updateInventoryText();
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -131,26 +145,25 @@ void Player::setView(sf::RenderWindow& m_window)
 ///////////////////////////////////////////////////////////////////
 void Player::handleInput()
 {
-	if (handleClimbEvent())
-	{
-		return;
-	}
+	if (handleClimbEvent()) return; // Don't check for other input if climbing
 
 	handleDestroyEvent();
 	handleBuildEvent();
+	handleInventoryEvents();
+	handleSprintEvent();
+	handleMovement(getInputVector());
+}
 
-	// Basic movement
+///////////////////////////////////////////////////////////////////
+void Player::handleSprintEvent()
+{
 	m_moveSpeed = m_DEFAULT_MOVE_SPEED;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
-		|| vmath::length(m_controller.getCurrentState().LeftThumbStick) > 80.0f
-		|| m_controller.getCurrentState().LTrigger > 0.0f
-		|| m_controller.getCurrentState().RTrigger > 0.0f)
+		|| m_controller.getCurrentState().LB)
 	{
 		m_moveSpeed = m_DEFAULT_MOVE_SPEED * 3.0f;
 	}
-
-	handleMovement(getInputVector());
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -282,9 +295,25 @@ void Player::handleDestroyEvent()
 		{
 			if (TileType::Null != m_world.getTileType(nextTile.x, nextTile.y, m_height))
 			{
-				if (m_height + 1 < Globals::WORLD_HEIGHT
-					&& TileType::Null == m_world.getTileType(nextTile.x, nextTile.y, m_height + 1))
+				if (m_height + 1 >= Globals::WORLD_HEIGHT
+					|| TileType::Null == m_world.getTileType(nextTile.x, nextTile.y, m_height + 1))
 				{
+					TileType tile = m_world.getTileType(nextTile.x, nextTile.y, m_height); // Get the tile type
+
+					if (TileType::Slope == tile) // Slopes are picked up as grass tiles
+						tile = TileType::Grass;
+
+					if (m_inventory.empty()) // If the inventory is empty, the selected tile is the once just picked up
+						m_selectedTile = tile;
+
+					// Check if the player has an item of that type already
+					if (m_inventory.count(tile))
+						m_inventory.at(tile) += 1; // Increment the amount
+					else
+						m_inventory.emplace(tile, 1); // Put one of the tile type into the inventory
+
+					updateInventoryText();
+					
 					m_world.destroyTile(nextTile.x, nextTile.y, m_height);
 				}
 			}
@@ -312,9 +341,88 @@ void Player::handleBuildEvent()
 				// Check that there is a tile underneath or is on the bottom of the world
 				if (m_height - 1 < 0 || TileType::Null != m_world.getTileType(nextTile.x, nextTile.y, m_height - 1))
 				{
-					m_world.buildTile(TileType::Grass, nextTile.x, nextTile.y, m_height);
+					if (!m_inventory.empty())
+					{
+						if (TileType::Tree == m_selectedTile)
+						{
+							if (nextTile.x - 1 >= 0 && TileType::Null == m_world.getTileType(nextTile.x - 1, nextTile.y, m_height)
+								&& nextTile.x + 1 >= 0 && TileType::Null == m_world.getTileType(nextTile.x + 1, nextTile.y, m_height)
+								&& nextTile.y - 1 >= 0 && TileType::Null == m_world.getTileType(nextTile.x - 1, nextTile.y - 1, m_height)
+								&& TileType::Null == m_world.getTileType(nextTile.x, nextTile.y - 1, m_height)
+								&& TileType::Null == m_world.getTileType(nextTile.x + 1, nextTile.y - 1, m_height))
+							{
+								m_world.setTile(TileType::Tree, { 96, 128, 16, 48 }, nextTile.x - 1, nextTile.y, m_height);
+								m_world.setTile(TileType::Tree, { 112, 128, 16, 48 }, nextTile.x, nextTile.y, m_height);
+								m_world.setTile(TileType::Tree, { 128, 128, 16, 48 }, nextTile.x + 1, nextTile.y, m_height);
+							}
+							else
+							{
+								return;
+							}
+						}
+						else
+						{
+							m_world.buildTile(m_selectedTile, nextTile.x, nextTile.y, m_height);
+						}
+
+						m_inventory.at(m_selectedTile)--; // Decrement the item
+
+						if (m_inventory.at(m_selectedTile) == 0)
+						{
+							m_inventory.erase(m_selectedTile);
+
+							if (!m_inventory.empty())
+							{
+								for (std::pair<const TileType, int> const& item : m_inventory)
+								{
+									m_selectedTile = item.first;
+									break;
+								}
+							}
+						}
+
+						updateInventoryText();
+					}
 				}
 			}
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////
+void Player::handleInventoryEvents()
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)
+		|| (m_controller.getCurrentState().RB && !m_controller.getPreviousState().RB))
+	{
+		if (m_inventory.size() > 1)
+		{
+			bool found = false;
+
+			for (std::pair<const TileType, int> const& item : m_inventory)
+			{
+				if (found)
+				{
+					m_selectedTile = item.first;
+					found = false;
+					break;
+				}
+				else if (item.first == m_selectedTile)
+				{
+					found = true;
+				}
+			}
+
+			if (found)
+			{
+				for (std::pair<const TileType, int> const& item : m_inventory)
+				{
+					m_selectedTile = item.first;
+					break;
+				}
+			}
+
+			updateInventoryText();
 		}
 	}
 }
@@ -394,6 +502,40 @@ void Player::loadTextures()
 
 	m_sprite.setTextureRect({ 0, m_characterNumber * 32, 16, 32 });
 	m_sprite.setOrigin(8.0f, 24.0f);
+}
+
+///////////////////////////////////////////////////////////////////
+void Player::loadFont()
+{
+	if (!m_font.loadFromFile("ASSETS/FONTS/arial.ttf"))
+	{
+		throw("Error loading arial font file in player");
+	}
+
+	m_inventoryText.setFont(m_font);
+	m_inventoryText.setScale(0.3f, 0.3f);
+}
+
+///////////////////////////////////////////////////////////////////
+void Player::updateInventoryText()
+{
+	std::string inventoryString;
+
+	for (std::pair<const TileType, int> const & item : m_inventory)
+	{
+		if (item.first == m_selectedTile)
+		{
+			inventoryString.append("> ");
+		}
+		else
+		{
+			inventoryString.append("- ");
+		}
+
+		inventoryString.append(Globals::toString(item.first) + ": " + std::to_string(item.second) + "\n");
+	}
+
+	m_inventoryText.setString(inventoryString);
 }
 
 ///////////////////////////////////////////////////////////////////

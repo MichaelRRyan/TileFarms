@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <map>
 #include "World.h"
 #include "VectorMath.h"
 #include "Gamepad.h"
@@ -16,6 +17,7 @@ public:
 	void update();
 
 	void draw(sf::RenderWindow & t_window) const;
+	void drawInventory(sf::RenderWindow& t_window);
 
 	unsigned const getHeight() const;
 	unsigned const getY() const;
@@ -29,17 +31,23 @@ public:
 
 private:
 
-	void handleInput();
-	void handleMovement(sf::Vector2f const& t_inputVector);
 	sf::Vector2f const getInputVector() const;
-	bool handleClimbEvent();
 
+	void handleInput();
+	void handleSprintEvent();
+	void handleMovement(sf::Vector2f const& t_inputVector);
+	bool handleClimbEvent();
 	void handleDestroyEvent();
 	void handleBuildEvent();
+	void handleInventoryEvents();
 
 	void animate();
 
 	void loadTextures();
+
+	void loadFont();
+
+	void updateInventoryText();
 
 	sf::Texture m_spriteSheet;
 	sf::Sprite m_sprite;
@@ -71,6 +79,12 @@ private:
 	sf::Vector2f m_targetPosition;
 
 	Gamepad m_controller;
+
+	std::map<TileType, int> m_inventory;
+	TileType m_selectedTile;
+
+	sf::Font m_font;
+	sf::Text m_inventoryText;
 };
 
 #endif // !PLAYER_H

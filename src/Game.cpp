@@ -197,6 +197,8 @@ void Game::render()
 			}
 		}
 	}
+
+	m_player.drawInventory(m_window);
 	
 	m_window.display();
 }
