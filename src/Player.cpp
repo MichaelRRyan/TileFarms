@@ -15,7 +15,7 @@ Player::Player(World& t_world) :
 
 	if (m_controller.connect())
 	{
-		m_controller.setJoystickDeadzone(30.0f);
+		m_controller.setAnalogStickDeadzone(30.0f);
 	}
 }
 
@@ -141,8 +141,6 @@ void Player::handleInput()
 
 	// Basic movement
 	m_moveSpeed = m_DEFAULT_MOVE_SPEED;
-
-	std::cout << vmath::length(m_controller.getCurrentState().LeftThumbStick) << std::endl;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
 		|| vmath::length(m_controller.getCurrentState().LeftThumbStick) > 80.0f
