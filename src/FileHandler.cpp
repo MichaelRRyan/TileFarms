@@ -126,7 +126,7 @@ bool const FileHandler::readWorldFromFile(World& t_world, std::string const& t_f
 			}
 		}
 
-		if (z < Globals::WORLD_HEIGHT)
+		if (z < Globals::WORLD_HEIGHT - 1)
 		{
 			std::cout << "ERROR: Line read too short. Z: " << z << std::endl;
 		}

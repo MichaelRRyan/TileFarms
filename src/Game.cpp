@@ -115,11 +115,11 @@ void Game::processEvents()
 			}
 			else if (sf::Keyboard::O == nextEvent.key.code) // Output to file
 			{
-				FileHandler::saveWorldToFile(m_world, "TestWorld1");
+				FileHandler::saveWorldToFile(m_world, "TestWorld2");
 			}
 			else if (sf::Keyboard::I == nextEvent.key.code) // Output to file
 			{
-				FileHandler::readWorldFromFile(m_world, "TestWorld");
+				FileHandler::readWorldFromFile(m_world, "TestWorld1");
 
 				m_player.setup();
 
