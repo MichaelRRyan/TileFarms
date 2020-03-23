@@ -113,6 +113,34 @@ void Game::processEvents()
 					}
 				}
 			}
+			else if (sf::Keyboard::O == nextEvent.key.code) // Output to file
+			{
+				FileHandler::saveWorldToFile(m_world, "TestWorld1");
+			}
+			else if (sf::Keyboard::I == nextEvent.key.code) // Output to file
+			{
+				FileHandler::readWorldFromFile(m_world, "TestWorld");
+
+				m_player.setup();
+
+				for (Chicken* chicken : m_chickens)
+				{
+					delete chicken;
+				}
+
+				m_chickens.clear();
+			}
+			else if (sf::Keyboard::P == nextEvent.key.code) // Output to file
+			{
+				std::vector<std::string> fileNames{ FileHandler::getSaveFileNames() };
+
+				std::cout << "File names:" << std::endl;
+
+				for (std::string const& name : fileNames)
+				{
+					std::cout << " - " << name << std::endl;
+				}
+			}
 #endif // _DEBUG
 		}
 	}

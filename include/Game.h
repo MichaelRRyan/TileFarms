@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "WorldGenerator.h"
 #include "Chicken.h"
+#include "FileHandler.h"
 
 /// <summary>
 /// The game's main class. Keeps the game running at 60

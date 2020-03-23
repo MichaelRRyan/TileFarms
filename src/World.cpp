@@ -64,6 +64,12 @@ TileType const World::getTileType(unsigned t_x, unsigned t_y, unsigned t_z) cons
 }
 
 ///////////////////////////////////////////////////////////////////
+sf::IntRect const World::getTileTextureRect(unsigned t_x, unsigned t_y, unsigned t_z) const
+{
+	return m_tiles[t_z][t_y][t_x].m_textureRect;
+}
+
+///////////////////////////////////////////////////////////////////
 void World::setTile(TileType t_tileType, int t_x, int t_y, int t_z)
 {
 	m_tiles[t_z][t_y][t_x].setType(t_tileType);

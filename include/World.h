@@ -19,6 +19,8 @@ public:
 
 	TileType const getTileType(unsigned t_x, unsigned t_y, unsigned t_z) const;
 
+	sf::IntRect const getTileTextureRect(unsigned t_x, unsigned t_y, unsigned t_z) const;
+
 	void setTile(TileType t_tileType, int t_x, int t_y, int t_z);
 
 	void setTile(TileType t_tileType, sf::IntRect t_textureRect, int t_x, int t_y, int t_z);
