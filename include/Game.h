@@ -46,6 +46,8 @@ private:
 
 	bool m_fullScreen;
 
+	sf::Shader m_shader;
+
 #ifdef CINEMATIC_CAMERA
 	sf::Vector2f cameraTarget;
 #endif

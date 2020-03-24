@@ -18,6 +18,12 @@ Game::Game() :
 
 	resetGame();
 
+	if (!m_shader.loadFromFile("shaders/vertex_shader.vert", "shaders/fragment_shader.frag"))
+	{
+		std::cout << "Failed to load shader" << std::endl;
+	}
+
+
 #ifdef CINEMATIC_CAMERA
 	// Set the camera target location
 	cameraTarget.x = rand() % static_cast<int>(Globals::WORLD_WIDTH_X* Globals::TILE_SIZE - m_window.getView().getSize().x) + (m_window.getView().getSize().x / 2.0f);
@@ -203,11 +209,13 @@ void Game::render()
 	}
 
 	
+	
 	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++) // Loop from the bottom level to the top
 	{
 		for (unsigned y = startY; y < endY; y++) // Loop from north to south
 		{
-			m_world.drawColumn(m_window, y, z);
+			m_shader.setUniform("lightPos", m_player.getPixelPosition());
+			m_world.drawColumn(m_window, m_shader, y, z);
 
 #ifndef CINEMATIC_CAMERA
 			if (m_player.getHeight() == z && m_player.getY() == y)
