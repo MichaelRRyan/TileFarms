@@ -15,7 +15,7 @@ public:
 
 	void initialise();
 
-	void drawColumn(sf::RenderWindow& t_window, sf::Shader const & t_shader, unsigned t_y, unsigned t_z);
+	void drawColumn(sf::RenderWindow& t_window, sf::Shader const * t_shader, unsigned t_y, unsigned t_z);
 
 	TileType const getTileType(unsigned t_x, unsigned t_y, unsigned t_z) const;
 

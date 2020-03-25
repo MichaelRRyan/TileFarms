@@ -87,4 +87,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\fragment_shader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\vertex_shader.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

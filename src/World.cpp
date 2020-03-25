@@ -24,7 +24,7 @@ void World::initialise()
 }
 
 ///////////////////////////////////////////////////////////////////
-void World::drawColumn(sf::RenderWindow& t_window, sf::Shader const& t_shader, unsigned t_y, unsigned t_z)
+void World::drawColumn(sf::RenderWindow& t_window, sf::Shader const * t_shader, unsigned t_y, unsigned t_z)
 {
 	unsigned startX = (t_window.getView().getCenter().x - t_window.getView().getSize().x / 2.0f) / Globals::TILE_SIZE;
 	unsigned endX = startX + (t_window.getView().getSize().x / Globals::TILE_SIZE) + 2;
@@ -51,7 +51,7 @@ void World::drawColumn(sf::RenderWindow& t_window, sf::Shader const& t_shader, u
 #endif // GENERATOR_DEBUG
 
 				// Draw the tile sprite
-				t_window.draw(m_tileSprite, &t_shader);
+				t_window.draw(m_tileSprite, t_shader);
 			}
 		}
 	}

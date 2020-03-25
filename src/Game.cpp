@@ -7,12 +7,10 @@ Game::Game() :
 	m_window{ sf::VideoMode::getDesktopMode(), Globals::GAME_TITLE, sf::Style::Fullscreen },
 	m_exitGame{ false },
 	m_player{ m_world },
-	m_fullScreen{ true }
+	m_fullScreen{ false },
+	m_hasLight{ true }
 {
-	sf::View view = m_window.getDefaultView();
-	view.setSize(view.getSize() / Globals::VIEW_SCALE);
-	view.setCenter(view.getCenter() / Globals::VIEW_SCALE);
-	m_window.setView(view);
+	setWindowState(m_fullScreen);
 
 	m_window.setVerticalSyncEnabled(true);
 
@@ -72,23 +70,7 @@ void Game::processEvents()
 		{
 			if (sf::Keyboard::F11 == nextEvent.key.code)
 			{
-				if (m_fullScreen) // Switch out of full screen
-				{
-					m_window.create(sf::VideoMode{ Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT, 32u }, Globals::GAME_TITLE);
-				}
-				else // Switch to full screen
-				{
-					m_window.create(sf::VideoMode::getDesktopMode(), Globals::GAME_TITLE, sf::Style::Fullscreen);
-				}
-				
-				// Reset the view
-				sf::View view = m_window.getDefaultView();
-				view.setSize(view.getSize() / Globals::VIEW_SCALE);
-				view.setCenter(view.getCenter() / Globals::VIEW_SCALE);
-				m_window.setView(view);
-
-				// Toggle the full screen bool
-				m_fullScreen = !m_fullScreen;
+				setWindowState(!m_fullScreen);
 			}
 #ifdef _DEBUG
 			else if (sf::Keyboard::R == nextEvent.key.code)
@@ -147,6 +129,10 @@ void Game::processEvents()
 					std::cout << " - " << name << std::endl;
 				}
 			}
+			else if (sf::Keyboard::L == nextEvent.key.code)
+			{
+				m_hasLight = !m_hasLight;
+			}
 #endif // _DEBUG
 		}
 	}
@@ -193,6 +179,13 @@ void Game::update(sf::Time t_deltaTime)
 		resetGame();
 }
 #endif // CINEMATIC_CAMERA
+
+	float time = m_gameTimer.getElapsedTime().asSeconds() / 100.0f;
+
+	// Set shader uniforms
+	m_shader.setUniform("lightPos", m_player.getPixelPosition());
+	m_shader.setUniform("hasLight", m_hasLight);
+	m_shader.setUniform("ambientLight", sf::Vector3f{ abs(sinf(time)), abs(sinf(time)), abs(sinf(time)) });
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -207,20 +200,17 @@ void Game::render()
 	{
 		endY = Globals::WORLD_WIDTH_Y;
 	}
-
-	
 	
 	for (unsigned z = 0; z < Globals::WORLD_HEIGHT; z++) // Loop from the bottom level to the top
 	{
 		for (unsigned y = startY; y < endY; y++) // Loop from north to south
 		{
-			m_shader.setUniform("lightPos", m_player.getPixelPosition());
-			m_world.drawColumn(m_window, m_shader, y, z);
+			m_world.drawColumn(m_window, &m_shader, y, z);
 
 #ifndef CINEMATIC_CAMERA
 			if (m_player.getHeight() == z && m_player.getY() == y)
 			{
-				m_player.draw(m_window);
+				m_player.draw(m_window, &m_shader);
 			}
 #endif // !CINEMATIC_CAMERA
 
@@ -251,6 +241,28 @@ void Game::resetGame()
 	}
 
 	m_chickens.clear();
+}
+
+///////////////////////////////////////////////////////////////////
+void Game::setWindowState(bool const t_fullscreen)
+{
+	if (t_fullscreen) // Switch out of full screen
+	{
+		m_window.create(sf::VideoMode::getDesktopMode(), Globals::GAME_TITLE, sf::Style::Fullscreen);
+	}
+	else // Switch to full screen
+	{
+		m_window.create(sf::VideoMode{ Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT, 32u }, Globals::GAME_TITLE);
+	}
+
+	// Reset the view
+	sf::View view = m_window.getDefaultView();
+	view.setSize(view.getSize() / Globals::VIEW_SCALE);
+	view.setCenter(view.getCenter() / Globals::VIEW_SCALE);
+	m_window.setView(view);
+
+	// Toggle the full screen bool
+	m_fullScreen = t_fullscreen;
 }
 
 ///////////////////////////////////////////////////////////////////

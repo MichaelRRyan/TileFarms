@@ -34,6 +34,7 @@ private:
 	void render();
 
 	void resetGame();
+	void setWindowState(bool const t_fullscreen);
 
 	sf::RenderWindow m_window;
 	bool m_exitGame;
@@ -47,6 +48,9 @@ private:
 	bool m_fullScreen;
 
 	sf::Shader m_shader;
+	bool m_hasLight;
+
+	sf::Clock m_gameTimer;
 
 #ifdef CINEMATIC_CAMERA
 	sf::Vector2f cameraTarget;

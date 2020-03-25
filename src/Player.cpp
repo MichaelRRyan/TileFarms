@@ -44,9 +44,9 @@ void Player::update()
 }
 
 ///////////////////////////////////////////////////////////////////
-void Player::draw(sf::RenderWindow& t_window) const
+void Player::draw(sf::RenderWindow& t_window, sf::Shader const * t_shader) const
 {
-	t_window.draw(m_sprite);
+	t_window.draw(m_sprite, t_shader);
 }
 
 ///////////////////////////////////////////////////////////////////

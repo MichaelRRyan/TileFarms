@@ -16,7 +16,7 @@ public:
 
 	void update();
 
-	void draw(sf::RenderWindow & t_window) const;
+	void draw(sf::RenderWindow & t_window, sf::Shader const * t_shader) const;
 	void drawInventory(sf::RenderWindow& t_window);
 
 	unsigned const getHeight() const;
