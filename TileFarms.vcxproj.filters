@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\GameObjects">
+      <UniqueIdentifier>{01e8216c-1e5b-464c-ab8f-f91fcedc17be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameObject">
+      <UniqueIdentifier>{1a0a9036-a14f-419b-80a3-815ec9b6fd7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Abstract">
+      <UniqueIdentifier>{e61017dd-9d68-433f-99fa-9f7ce9236f4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Abstract">
+      <UniqueIdentifier>{62ed6d4f-b906-48da-badf-12ae1dd4d9f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Game.cpp">
@@ -21,70 +33,76 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\World.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Chicken.cpp">
+      <Filter>Source Files\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="src\Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VectorMath.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PerlinNoiseGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Tile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Chicken.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Gamepad.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="src\FileHandler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gamepad.cpp">
+      <Filter>Source Files\Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightHandler.cpp">
+      <Filter>Source Files\Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PerlinNoiseGenerator.cpp">
+      <Filter>Source Files\Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Tile.cpp">
+      <Filter>Source Files\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VectorMath.cpp">
+      <Filter>Source Files\Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="src\World.cpp">
+      <Filter>Source Files\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WorldGenerator.cpp">
+      <Filter>Source Files\Abstract</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Chicken.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Player.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FileHandler.h">
+      <Filter>Header Files\Abstract</Filter>
+    </ClInclude>
     <ClInclude Include="include\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\TileType.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\Gamepad.h">
+      <Filter>Header Files\Abstract</Filter>
     </ClInclude>
     <ClInclude Include="include\Globals.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Abstract</Filter>
     </ClInclude>
-    <ClInclude Include="include\World.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\VectorMath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\WorldGenerator.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\LightHandler.h">
+      <Filter>Header Files\Abstract</Filter>
     </ClInclude>
     <ClInclude Include="include\PerlinNoiseGenerator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Abstract</Filter>
     </ClInclude>
     <ClInclude Include="include\Tile.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="include\Chicken.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\World.h">
+      <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="include\Gamepad.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\WorldGenerator.h">
+      <Filter>Header Files\Abstract</Filter>
     </ClInclude>
-    <ClInclude Include="include\FileHandler.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\TileType.h">
+      <Filter>Header Files\Abstract</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VectorMath.h">
+      <Filter>Header Files\Abstract</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

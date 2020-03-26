@@ -16,12 +16,6 @@ Game::Game() :
 
 	resetGame();
 
-	if (!m_shader.loadFromFile("shaders/vertex_shader.vert", "shaders/fragment_shader.frag"))
-	{
-		std::cout << "Failed to load shader" << std::endl;
-	}
-
-
 #ifdef CINEMATIC_CAMERA
 	// Set the camera target location
 	cameraTarget.x = rand() % static_cast<int>(Globals::WORLD_WIDTH_X* Globals::TILE_SIZE - m_window.getView().getSize().x) + (m_window.getView().getSize().x / 2.0f);
@@ -180,12 +174,11 @@ void Game::update(sf::Time t_deltaTime)
 }
 #endif // CINEMATIC_CAMERA
 
-	float time = m_gameTimer.getElapsedTime().asSeconds() / 100.0f;
+	m_lightHandler.update();
 
 	// Set shader uniforms
-	m_shader.setUniform("lightPos", m_player.getPixelPosition());
-	m_shader.setUniform("hasLight", m_hasLight);
-	m_shader.setUniform("ambientLight", sf::Vector3f{ abs(sinf(time)), abs(sinf(time)), abs(sinf(time)) });
+	m_lightHandler.getShader()->setUniform("lightPos", m_player.getPixelPosition());
+	m_lightHandler.getShader()->setUniform("hasLight", m_hasLight);
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -205,12 +198,12 @@ void Game::render()
 	{
 		for (unsigned y = startY; y < endY; y++) // Loop from north to south
 		{
-			m_world.drawColumn(m_window, &m_shader, y, z);
+			m_world.drawColumn(m_window, m_lightHandler.getShader(), y, z);
 
 #ifndef CINEMATIC_CAMERA
 			if (m_player.getHeight() == z && m_player.getY() == y)
 			{
-				m_player.draw(m_window, &m_shader);
+				m_player.draw(m_window, m_lightHandler.getShader());
 			}
 #endif // !CINEMATIC_CAMERA
 
@@ -225,6 +218,13 @@ void Game::render()
 	}
 
 	m_player.drawInventory(m_window);
+
+	sf::View currentView = m_window.getView();
+	m_window.setView(m_window.getDefaultView());
+	
+	m_lightHandler.draw(m_window);
+
+	m_window.setView(currentView);
 	
 	m_window.display();
 }

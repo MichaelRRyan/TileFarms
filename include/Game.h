@@ -13,6 +13,7 @@
 #include "WorldGenerator.h"
 #include "Chicken.h"
 #include "FileHandler.h"
+#include "LightHandler.h"
 
 /// <summary>
 /// The game's main class. Keeps the game running at 60
@@ -47,8 +48,9 @@ private:
 
 	bool m_fullScreen;
 
-	sf::Shader m_shader;
 	bool m_hasLight;
+
+	LightHandler m_lightHandler;
 
 	sf::Clock m_gameTimer;
 

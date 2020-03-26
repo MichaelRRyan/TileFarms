@@ -148,6 +148,7 @@
     <ClCompile Include="src\FileHandler.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Gamepad.cpp" />
+    <ClCompile Include="src\LightHandler.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\PerlinNoiseGenerator.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\Gamepad.h" />
     <ClInclude Include="include\Globals.h" />
+    <ClInclude Include="include\LightHandler.h" />
     <ClInclude Include="include\PerlinNoiseGenerator.h" />
     <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\Tile.h" />
