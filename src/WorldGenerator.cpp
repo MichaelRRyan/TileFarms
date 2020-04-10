@@ -225,11 +225,9 @@ void WorldGenerator::addTrees(World& t_world)
 							&& TileType::Grass == t_world.getTileType(x + 1, y - 1, z - 1))
 						{
 							// If there's space for a tree, place one 1 in 10 times
-							if (rand() % 30 == 0)
+							if (rand() % 10 == 0)
 							{
-								t_world.setTile(TileType::Tree, { 96, 128, 16, 48 }, x - 1, y, z);
-								t_world.setTile(TileType::Tree, { 112, 128, 16, 48 }, x, y, z);
-								t_world.setTile(TileType::Tree, { 128, 128, 16, 48 }, x + 1, y, z);
+								t_world.setTile(TileType::Tree, { 144, 0, 48, 48 }, x, y, z);
 							}
 						}
 					}

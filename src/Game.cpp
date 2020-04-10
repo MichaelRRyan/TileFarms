@@ -7,8 +7,8 @@ Game::Game() :
 	m_window{ sf::VideoMode::getDesktopMode(), Globals::GAME_TITLE, sf::Style::Fullscreen },
 	m_exitGame{ false },
 	m_player{ m_world },
-	m_fullScreen{ false },
-	m_hasLight{ true }
+	m_fullScreen{ true },
+	m_hasLight{ false }
 {
 	setWindowState(m_fullScreen);
 
@@ -126,6 +126,7 @@ void Game::processEvents()
 			else if (sf::Keyboard::L == nextEvent.key.code)
 			{
 				m_hasLight = !m_hasLight;
+				m_lightHandler.getShader()->setUniform("hasLight", m_hasLight);
 			}
 #endif // _DEBUG
 		}
@@ -178,7 +179,7 @@ void Game::update(sf::Time t_deltaTime)
 
 	// Set shader uniforms
 	m_lightHandler.getShader()->setUniform("lightPos", m_player.getPixelPosition());
-	m_lightHandler.getShader()->setUniform("hasLight", m_hasLight);
+	
 }
 
 ///////////////////////////////////////////////////////////////////

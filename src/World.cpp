@@ -45,6 +45,12 @@ void World::drawColumn(sf::RenderWindow& t_window, sf::Shader const * t_shader, 
 				// Set the tile sprite's pixel position
 				m_tileSprite.setPosition(x * Globals::TILE_SIZE, t_y * Globals::TILE_SIZE + Globals::TILE_SIZE - m_tileSprite.getTextureRect().height);
 
+				// Offset to the side if a tree tile
+				if (TileType::Tree == m_tiles[t_z][t_y][x].m_type)
+				{
+					m_tileSprite.move(-Globals::TILE_SIZE, 0.0f);
+				}
+
 #ifdef GENERATOR_DEBUG
 				sf::Uint8 value{ static_cast<sf::Uint8>(1.0 * t_z / Globals::WORLD_HEIGHT * 155.0 + 100.0) };
 				m_tileSprite.setColor(sf::Color{ value, value, value });

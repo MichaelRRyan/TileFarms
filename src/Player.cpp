@@ -351,9 +351,7 @@ void Player::handleBuildEvent()
 								&& TileType::Null == m_world.getTileType(nextTile.x, nextTile.y - 1, m_height)
 								&& TileType::Null == m_world.getTileType(nextTile.x + 1, nextTile.y - 1, m_height))
 							{
-								m_world.setTile(TileType::Tree, { 96, 128, 16, 48 }, nextTile.x - 1, nextTile.y, m_height);
-								m_world.setTile(TileType::Tree, { 112, 128, 16, 48 }, nextTile.x, nextTile.y, m_height);
-								m_world.setTile(TileType::Tree, { 128, 128, 16, 48 }, nextTile.x + 1, nextTile.y, m_height);
+								m_world.setTile(TileType::Tree, { 144, 0, 48, 48 }, nextTile.x, nextTile.y, m_height);
 							}
 							else
 							{
